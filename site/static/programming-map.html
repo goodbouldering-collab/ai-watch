@@ -354,21 +354,33 @@
   }
   .ai-pane.active { display: grid; }
   .ai-chip {
+    position: relative;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-left: 3px solid #7c3aed;
     border-radius: 7px;
-    padding: 7px 10px;
+    padding: 7px 22px 7px 10px;
     font-size: 0.72rem;
     color: #475569;
     line-height: 1.45;
+    cursor: help;
   }
+  .ai-chip::after {
+    content: "💡";
+    position: absolute;
+    top: 6px;
+    right: 7px;
+    font-size: 0.65rem;
+    opacity: 0.4;
+    transition: opacity .15s;
+  }
+  .ai-chip:hover::after { opacity: 1; }
   .ai-chip b {
     color: #1e293b;
     font-weight: 800;
     margin-right: 4px;
   }
-  .ai-chip span {
+  .ai-chip > span {
     display: inline-block;
     font-size: 0.6rem;
     color: #b45309;
@@ -378,6 +390,49 @@
     margin: 0 4px 0 0;
     font-weight: 700;
   }
+  /* 語源ポップオーバー: hover & .open 時に表示。absoluteなのでレイアウトを押し下げない */
+  .ai-chip .origin {
+    display: none;
+    position: absolute;
+    left: 0; right: 0;
+    top: calc(100% + 4px);
+    z-index: 10;
+    background: #1e293b;
+    color: #f1f5f9;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 0.68rem;
+    line-height: 1.55;
+    box-shadow: 0 10px 30px rgba(15,23,42,.28);
+    pointer-events: none;
+  }
+  .ai-chip .origin::before {
+    content: "";
+    position: absolute;
+    top: -5px; left: 14px;
+    border: 5px solid transparent;
+    border-bottom-color: #1e293b;
+    border-top: 0;
+  }
+  .ai-chip .origin em {
+    display: block;
+    color: #fbbf24;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 0.65rem;
+    margin-bottom: 2px;
+    letter-spacing: .02em;
+  }
+  .ai-chip .origin i {
+    display: block;
+    color: #a5b4fc;
+    font-style: normal;
+    font-size: 0.65rem;
+    margin-top: 3px;
+  }
+  .ai-chip:hover .origin,
+  .ai-chip.open .origin { display: block; }
+  .ai-chip.open { border-left-color: #f59e0b; background: #fffbeb; }
 </style>
 </head>
 <body>
@@ -1207,56 +1262,60 @@
     </div>
 
     <div class="ai-pane active" data-ai="prompt">
-      <div class="ai-chip"><b>役割指定</b> <span>★</span> 先に「〜の専門家」と宣言 → 語彙が安定</div>
-      <div class="ai-chip"><b>Few-shot</b> <span>★</span> 入出力例を数個提示 → 説明より早い</div>
-      <div class="ai-chip"><b>CoT</b> <span>★</span> 「段階的に考えて」で推論過程を誘導</div>
-      <div class="ai-chip"><b>出力形式</b> <span>★</span> JSON/表を指定 → 後段でパース可</div>
-      <div class="ai-chip"><b>制約列挙</b> <span>△</span> 禁則を明文化 → 暴走抑止</div>
-      <div class="ai-chip"><b>ReAct</b> <span>○</span> 思考→行動→観察ループ</div>
+      <div class="ai-chip"><b>Prompt</b> <span>★</span> AIへの指示文そのもの<div class="origin"><em>語源</em>ラテン語 <b>promptus</b>（用意された・即座の）。舞台で役者に台詞を囁く「プロンプター」と同根。<i>覚え方: 「役者に渡す台本」</i></div></div>
+      <div class="ai-chip"><b>役割指定</b> <span>★</span> 「〜の専門家」と宣言し語彙を固定<div class="origin"><em>語源</em>Role = 昔の俳優が台詞を巻いた「巻物(roll)」。<i>覚え方: 役を与える＝巻物を渡す</i></div></div>
+      <div class="ai-chip"><b>Few-shot</b> <span>★</span> 例を数個見せてから頼む<div class="origin"><em>語源</em>英 <b>few(少数)</b> + <b>shot(試行)</b>。元々は機械学習の「少数サンプル学習」。<i>覚え方: 「数発の試し撃ちで覚えさせる」</i></div></div>
+      <div class="ai-chip"><b>CoT</b> <span>★</span> 段階的に考えさせ推論を誘導<div class="origin"><em>語源</em>Chain of Thought = 「思考の鎖」。Google 2022年論文の造語。<i>覚え方: 思考を1本の鎖でつなぐ</i></div></div>
+      <div class="ai-chip"><b>出力形式</b> <span>★</span> JSON/表を指定しパース可能に<div class="origin"><em>語源</em>Format = ラテン語 <b>forma</b>（型）。本の「判型」が原義。<i>覚え方: 「器の型を決めてから注ぐ」</i></div></div>
+      <div class="ai-chip"><b>制約列挙</b> <span>△</span> 禁則を明文化して暴走抑止<div class="origin"><em>語源</em>Constraint = ラテン語 <b>constringere</b>（強く縛る）。<i>覚え方: 「縛って暴れさせない」</i></div></div>
+      <div class="ai-chip"><b>ReAct</b> <span>○</span> 思考→行動→観察のループ<div class="origin"><em>語源</em><b>Rea</b>son + <b>Act</b> の合成。React(反応する)にも掛けた Princeton 2022 論文の造語。<i>覚え方: 「考えて→動いて→また考える」</i></div></div>
     </div>
     <div class="ai-pane" data-ai="context">
-      <div class="ai-chip"><b>CLAUDE.md</b> <span>★</span> プロジェクト規約を自動常駐化</div>
-      <div class="ai-chip"><b>RAG</b> <span>★</span> 関連文書を検索して差し込み</div>
-      <div class="ai-chip"><b>コンテキスト圧縮</b> <span>★</span> 履歴を要約してトークン節約</div>
-      <div class="ai-chip"><b>メモリ階層</b> <span>△</span> 短期/長期を分離保管</div>
-      <div class="ai-chip"><b>埋め込み検索</b> <span>△</span> 意味ベースのベクトル類似検索</div>
-      <div class="ai-chip"><b>Prompt Caching</b> <span>△</span> 固定部分を再利用して高速化</div>
-      <div class="ai-chip"><b>コンテキスト汚染</b> <span>○</span> 詰め込むほど精度が落ちる罠</div>
+      <div class="ai-chip"><b>Context</b> <span>★</span> AIに渡す周辺情報の総体<div class="origin"><em>語源</em>ラテン語 <b>con</b>(共に) + <b>texere</b>(織る) = 「共に織られたもの」。textile（織物）と兄弟語。<i>覚え方: 「言葉を取り巻く織物」</i></div></div>
+      <div class="ai-chip"><b>CLAUDE.md</b> <span>★</span> プロジェクト規約を常駐させる<div class="origin"><em>語源</em>Claude Code が起動時に自動で読むファイル名の慣習。<b>.md</b> は Markdown。<i>覚え方: 「Claude宛の置き手紙」</i></div></div>
+      <div class="ai-chip"><b>RAG</b> <span>★</span> 関連文書を検索して差し込み<div class="origin"><em>語源</em><b>R</b>etrieval(検索)-<b>A</b>ugmented(強化された)-<b>G</b>eneration(生成)。Meta 2020年の論文命名。<i>覚え方: 「調べて・足して・作る」</i></div></div>
+      <div class="ai-chip"><b>コンテキスト圧縮</b> <span>★</span> 履歴を要約しトークン節約<div class="origin"><em>語源</em>Compress = ラテン語 <b>comprimere</b>（押し固める）。<i>覚え方: 「過去会話を小さく畳む」</i></div></div>
+      <div class="ai-chip"><b>メモリ階層</b> <span>△</span> 短期/長期を分離保管<div class="origin"><em>語源</em>Memory = ラテン語 <b>memor</b>(覚えている)。CPUの L1/L2/L3 キャッシュに由来する階層思想。<i>覚え方: 「すぐ使う棚と倉庫を分ける」</i></div></div>
+      <div class="ai-chip"><b>埋め込み検索</b> <span>△</span> 意味ベースのベクトル類似検索<div class="origin"><em>語源</em>Embedding = 「埋め込む」。文を数百次元の数値空間に"埋め込む"ことから。<i>覚え方: 「言葉を座標に置き換える」</i></div></div>
+      <div class="ai-chip"><b>Prompt Caching</b> <span>△</span> 固定部分を再利用し高速化<div class="origin"><em>語源</em>Cache = 仏語 <b>cacher</b>(隠す)。元は猟師が獲物を隠す場所。<i>覚え方: 「使い回すため脇に隠しておく」</i></div></div>
+      <div class="ai-chip"><b>コンテキスト汚染</b> <span>○</span> 詰め込むほど精度が落ちる罠<div class="origin"><em>語源</em>Pollution = ラテン語 <b>polluere</b>(汚す)。<i>覚え方: 「不要情報が混ざると濁る」</i></div></div>
     </div>
     <div class="ai-pane" data-ai="harness">
-      <div class="ai-chip"><b>Tool Use</b> <span>★</span> Read/Write/Bash等を関数化</div>
-      <div class="ai-chip"><b>Agentic Loop</b> <span>★</span> 連続ツール呼び出しで自律実行</div>
-      <div class="ai-chip"><b>Sandbox</b> <span>★</span> 隔離環境で安全にコード実行</div>
-      <div class="ai-chip"><b>Permission制御</b> <span>★</span> 危険操作は人間承認</div>
-      <div class="ai-chip"><b>Hook</b> <span>△</span> 呼出前後に監査・整形を差込</div>
-      <div class="ai-chip"><b>Sub Agent</b> <span>△</span> 専門役を並列分離実行</div>
-      <div class="ai-chip"><b>MCP</b> <span>△</span> 外部ツール連携の標準規格</div>
+      <div class="ai-chip"><b>Harness</b> <span>★</span> AIを安全に動かす"装具一式"<div class="origin"><em>語源</em>古ノルド語 <b>hernest</b>（軍装・馬具）。馬に付ける革ベルト一式が原義で「制御装置」の意へ。<i>覚え方: 「暴れ馬に付ける手綱」</i></div></div>
+      <div class="ai-chip"><b>Tool Use</b> <span>★</span> Read/Write/Bash等を関数化<div class="origin"><em>語源</em>Tool = 古英語 <b>tōl</b>(道具)。Anthropic API の "tool_use" ブロックが業界用語化。<i>覚え方: 「AIに道具箱を渡す」</i></div></div>
+      <div class="ai-chip"><b>Agentic Loop</b> <span>★</span> 連続ツール呼出で自律実行<div class="origin"><em>語源</em>Agent = ラテン語 <b>agere</b>(行う) → 「代理で動く者」。<i>覚え方: 「自分で動き続ける使者」</i></div></div>
+      <div class="ai-chip"><b>Sandbox</b> <span>★</span> 隔離環境で安全に実行<div class="origin"><em>語源</em>子供用の「砂場」。本物の町を壊さずに遊べることから、IT で「隔離領域」の比喩に。<i>覚え方: 「砂場で遊ぶなら壊しても安全」</i></div></div>
+      <div class="ai-chip"><b>Permission</b> <span>★</span> 危険操作は人間承認を挟む<div class="origin"><em>語源</em>ラテン語 <b>permittere</b>(通過を許す)。per(通して) + mittere(送る)。<i>覚え方: 「関所を通す許可証」</i></div></div>
+      <div class="ai-chip"><b>Hook</b> <span>△</span> 呼出前後に監査/整形を差込<div class="origin"><em>語源</em>英 <b>hook</b>(鉤)。「処理の途中にフックを引っ掛けて割り込む」比喩。<i>覚え方: 「流れに鉤を引っ掛けて横取り」</i></div></div>
+      <div class="ai-chip"><b>Sub Agent</b> <span>△</span> 専門役を並列分離実行<div class="origin"><em>語源</em>Sub = ラテン語 <b>sub</b>(下の)。部下のエージェントを指す。<i>覚え方: 「下請けに外注」</i></div></div>
+      <div class="ai-chip"><b>MCP</b> <span>△</span> 外部ツール連携の標準規格<div class="origin"><em>語源</em><b>M</b>odel <b>C</b>ontext <b>P</b>rotocol。Anthropic 2024発表。USB-C のようにAIと外部を繋ぐ共通端子を目指す。<i>覚え方: 「AI界のUSB-C」</i></div></div>
     </div>
     <div class="ai-pane" data-ai="eval">
-      <div class="ai-chip"><b>Evalセット</b> <span>★</span> プロンプト改良時の回帰テスト</div>
-      <div class="ai-chip"><b>LLM-as-Judge</b> <span>△</span> 別LLMに採点させる自動評価</div>
-      <div class="ai-chip"><b>A/Bテスト</b> <span>△</span> 2案並行稼働で勝率計測</div>
-      <div class="ai-chip"><b>ゴールデンデータ</b> <span>△</span> 人手作成の正解例・基準の根幹</div>
+      <div class="ai-chip"><b>Eval</b> <span>★</span> プロンプト改良時の回帰テスト<div class="origin"><em>語源</em>Evaluation = ラテン語 <b>ex</b>(外へ) + <b>valere</b>(価値がある)。「価値を引き出して測る」。<i>覚え方: 「価値を天秤にかける」</i></div></div>
+      <div class="ai-chip"><b>LLM-as-Judge</b> <span>△</span> 別LLMに採点させる自動評価<div class="origin"><em>語源</em>Judge = ラテン語 <b>judex</b>(法の宣告者)。「LLMを裁判官席に座らせる」という直喩。<i>覚え方: 「AIがAIを裁く」</i></div></div>
+      <div class="ai-chip"><b>A/Bテスト</b> <span>△</span> 2案並行稼働で勝率計測<div class="origin"><em>語源</em>20世紀初頭の農業実験で区画A/Bを比較したのが起源。Googleが Web で標準化。<i>覚え方: 「紅組vs白組の勝敗」</i></div></div>
+      <div class="ai-chip"><b>ゴールデンデータ</b> <span>△</span> 人手作成の正解例集<div class="origin"><em>語源</em>Gold Standard = 19世紀の「金本位制」。価値の絶対基準という意から「信頼できる絶対正解」の意へ。<i>覚え方: 「金(きん)の物差し」</i></div></div>
     </div>
     <div class="ai-pane" data-ai="orch">
-      <div class="ai-chip"><b>Managed Agents</b> <span>★</span> CMA等の自律エージェント基盤</div>
-      <div class="ai-chip"><b>計画→実行分離</b> <span>★</span> Plan Modeで先に設計→承認→実行</div>
-      <div class="ai-chip"><b>Multi-Agent</b> <span>△</span> 設計/実装/レビュー役の協調</div>
-      <div class="ai-chip"><b>セルフリフレクション</b> <span>△</span> 自作物を自己レビューで改善</div>
-      <div class="ai-chip"><b>Human-in-the-Loop</b> <span>△</span> 要所で人間承認を挟む</div>
+      <div class="ai-chip"><b>Orchestration</b> <span>★</span> 複数AIを指揮する統括役<div class="origin"><em>語源</em>ギリシャ <b>orkhēstra</b>(古代劇場の合唱団の場所) → 管弦楽団の指揮。<i>覚え方: 「AIたちの指揮者」</i></div></div>
+      <div class="ai-chip"><b>Managed Agents</b> <span>★</span> 自律エージェント実行基盤<div class="origin"><em>語源</em>Managed = 伊語 <b>maneggiare</b>(馬を手綱で扱う)。Anthropic CMA 等。<i>覚え方: 「手綱付きの自律エージェント」</i></div></div>
+      <div class="ai-chip"><b>Plan → Execute</b> <span>★</span> 先に設計→承認→実行に分離<div class="origin"><em>語源</em>Plan = ラテン語 <b>planus</b>(平らな・図面)。建築の平面図が原義。<i>覚え方: 「先に青写真、後に工事」</i></div></div>
+      <div class="ai-chip"><b>Multi-Agent</b> <span>△</span> 複数役を協調させる<div class="origin"><em>語源</em>Multi = ラテン語 <b>multus</b>(多い)。設計/実装/レビュー役を分担。<i>覚え方: 「社内の部署分担」</i></div></div>
+      <div class="ai-chip"><b>Reflection</b> <span>△</span> 自作物を自己レビュー<div class="origin"><em>語源</em>ラテン語 <b>reflectere</b>(後ろへ曲げる) → 「光を跳ね返す＝鏡映し」。<i>覚え方: 「自分を鏡に映して直す」</i></div></div>
+      <div class="ai-chip"><b>Human-in-the-Loop</b> <span>△</span> 要所で人間承認を挟む<div class="origin"><em>語源</em>軍事・航空用語の制御ループ「輪」に「人間を入れる」。自動運転やミサイル制御から輸入。<i>覚え方: 「自動化の輪に人が一人」</i></div></div>
     </div>
     <div class="ai-pane" data-ai="tune">
-      <div class="ai-chip"><b>ファインチューニング</b> <span>△</span> 独自データで追加学習</div>
-      <div class="ai-chip"><b>LoRA</b> <span>○</span> 少パラメータだけ差分学習</div>
-      <div class="ai-chip"><b>Distillation</b> <span>○</span> 大モデル→小モデルへ知識転写</div>
-      <div class="ai-chip"><b>RLHF</b> <span>○</span> 人間フィードバックで強化学習</div>
+      <div class="ai-chip"><b>Fine-Tuning</b> <span>△</span> 独自データで追加学習<div class="origin"><em>語源</em>Tune = 古仏語 <b>ton</b>(音色) → 楽器の調律。<b>Fine</b>(細かく) + tuning で「細部まで調律する」。<i>覚え方: 「ギターのペグを微調整」</i></div></div>
+      <div class="ai-chip"><b>LoRA</b> <span>○</span> 少パラメータだけ差分学習<div class="origin"><em>語源</em><b>Lo</b>w-<b>R</b>ank <b>A</b>daptation。Microsoft 2021論文。既存モデルに薄い"差分レイヤー"を貼る。<i>覚え方: 「上から貼る薄皮」</i></div></div>
+      <div class="ai-chip"><b>Distillation</b> <span>○</span> 大モデル→小モデルへ知識転写<div class="origin"><em>語源</em>Distill = ラテン語 <b>de</b>(下へ) + <b>stillare</b>(滴る) = 蒸留。原液から純粋成分を抽出する意。<i>覚え方: 「大モデルから知識を蒸留」</i></div></div>
+      <div class="ai-chip"><b>RLHF</b> <span>○</span> 人間フィードバックで強化学習<div class="origin"><em>語源</em><b>R</b>einforcement <b>L</b>earning from <b>H</b>uman <b>F</b>eedback。ChatGPT を生んだ OpenAI 2022 の鍵技術。<i>覚え方: 「人の👍👎で育てる」</i></div></div>
     </div>
     <div class="ai-pane" data-ai="safe">
-      <div class="ai-chip"><b>インジェクション</b> <span>★</span> 外部入力に潜む命令を信頼度評価</div>
-      <div class="ai-chip"><b>出力フィルタ</b> <span>★</span> 個人情報・有害表現を後段除去</div>
-      <div class="ai-chip"><b>ハルシネーション対策</b> <span>★</span> 出典必須・RAG併用・不明時沈黙</div>
-      <div class="ai-chip"><b>レート制限</b> <span>△</span> トークン上限でコスト爆発防止</div>
-      <div class="ai-chip"><b>監査ログ</b> <span>△</span> 全入出力を保存して追跡可能に</div>
+      <div class="ai-chip"><b>Injection</b> <span>★</span> 外部入力に潜む命令を警戒<div class="origin"><em>語源</em>ラテン語 <b>injicere</b>(中に投げ込む)。SQL インジェクション同様「悪意の混入」。<i>覚え方: 「外から注射される攻撃」</i></div></div>
+      <div class="ai-chip"><b>出力フィルタ</b> <span>★</span> 個人情報・有害表現を後段除去<div class="origin"><em>語源</em>Filter = 中世ラテン語 <b>filtrum</b>(フェルト生地)。液体を濾す布が原義。<i>覚え方: 「出口でこし取る」</i></div></div>
+      <div class="ai-chip"><b>Hallucination</b> <span>★</span> AIが事実でない情報を生成<div class="origin"><em>語源</em>ラテン語 <b>hallucinari</b>(心が彷徨う)。本来は人間の幻覚症状。<i>覚え方: 「AIの夢うつつ」</i></div></div>
+      <div class="ai-chip"><b>レート制限</b> <span>△</span> トークン上限でコスト爆発防止<div class="origin"><em>語源</em>Rate = ラテン語 <b>rata</b>(割り当てられた量)。<i>覚え方: 「一定間隔で蛇口を絞る」</i></div></div>
+      <div class="ai-chip"><b>監査ログ</b> <span>△</span> 全入出力を保存し追跡<div class="origin"><em>語源</em>Audit = ラテン語 <b>audire</b>(聴く)。古代ローマで会計を読み上げて聴き取ったことから。<i>覚え方: 「後から聴き返せる記録」</i></div></div>
     </div>
   </div>
 
@@ -1322,11 +1381,24 @@
   (function(){
     const tabs = document.querySelectorAll('.ai-tab');
     const panes = document.querySelectorAll('.ai-pane');
+    const chips = document.querySelectorAll('.ai-chip');
     tabs.forEach(t => t.addEventListener('click', () => {
       const k = t.dataset.ai;
       tabs.forEach(x => x.classList.toggle('active', x === t));
       panes.forEach(p => p.classList.toggle('active', p.dataset.ai === k));
+      chips.forEach(c => c.classList.remove('open'));
     }));
+    chips.forEach(c => c.addEventListener('click', (e) => {
+      if (e.target.closest('.origin')) return;
+      const wasOpen = c.classList.contains('open');
+      chips.forEach(x => x.classList.remove('open'));
+      if (!wasOpen) c.classList.add('open');
+    }));
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.ai-chip')) {
+        chips.forEach(c => c.classList.remove('open'));
+      }
+    });
   })();
 </script>
 </body>
