@@ -18,7 +18,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/Screenshot-2026-04-16-at-13.01.11.png?quality=90&amp;strip=all&amp;crop=0%2C8.7994481637149%2C100%2C83.384081972391&amp;w=1200",
-      "published": "2026-04-16T13:00:00-04:00"
+      "published": "2026-04-16T13:00:00-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "f3a8a69a9bd674ef",
@@ -37,7 +39,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/google-ai-mode-side-by-side.png?quality=90&amp;strip=all&amp;crop=0%2C15.573644440406%2C100%2C68.852711119189&amp;w=1200",
-      "published": "2026-04-16T13:00:00-04:00"
+      "published": "2026-04-16T13:00:00-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "5162779506349d8c",
@@ -56,7 +60,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/Screenshot-2026-04-16-at-8.32.59AM.png?quality=90&amp;strip=all&amp;crop=0%2C3.2902166102043%2C100%2C93.419566779591&amp;w=1200",
-      "published": "2026-04-16T12:00:00-04:00"
+      "published": "2026-04-16T12:00:00-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "eb801d723f1bad3d",
@@ -75,7 +81,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/01/STKB364_CLAUDE_2_C.jpg?quality=90&amp;strip=all&amp;crop=0%2C10.732984293194%2C100%2C78.534031413613&amp;w=1200",
-      "published": "2026-04-16T11:59:24-04:00"
+      "published": "2026-04-16T11:59:24-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "b623ea0e7ea6b8b9",
@@ -94,7 +102,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/altman_illo.jpg?quality=90&amp;strip=all&amp;crop=0%2C10.732984293194%2C100%2C78.534031413613&amp;w=1200",
-      "published": "2026-04-16T10:00:00-04:00"
+      "published": "2026-04-16T10:00:00-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "ef24566d95ebdfe2",
@@ -113,7 +123,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/c.aiBooks-Header-Image.png?quality=90&amp;strip=all&amp;crop=0%2C3.4613147178592%2C100%2C93.077370564282&amp;w=1200",
-      "published": "2026-04-16T10:00:00-04:00"
+      "published": "2026-04-16T10:00:00-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "48236ef27f8725d7",
@@ -132,7 +144,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/Canva-AI-2.0.png?quality=90&amp;strip=all&amp;crop=0%2C3.4613147178592%2C100%2C93.077370564282&amp;w=1200",
-      "published": "2026-04-16T09:07:09-04:00"
+      "published": "2026-04-16T09:07:09-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "b708c39a927a6bf5",
@@ -151,7 +165,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://img.youtube.com/vi/oBCUQ0Uqw-E/hqdefault.jpg",
-      "published": "2026-04-16T11:01:27+00:00"
+      "published": "2026-04-16T11:01:27+00:00",
+      "_is_video": true,
+      "_summary_clean": ""
     },
     {
       "hash": "f84b950cbabd6703",
@@ -170,7 +186,9 @@
         "freshness": 0.0
       },
       "thumbnail": "",
-      "published": "Thu, 16 Apr 2026 10:00:00 GMT"
+      "published": "Thu, 16 Apr 2026 10:00:00 GMT",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "d77605d0ffa18e9e",
@@ -189,7 +207,9 @@
         "freshness": 0.0
       },
       "thumbnail": "",
-      "published": "Thu, 16 Apr 2026 01:00:00 GMT"
+      "published": "Thu, 16 Apr 2026 01:00:00 GMT",
+      "_is_video": false,
+      "_summary_clean": ""
     }
   ]
 }
