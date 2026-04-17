@@ -18,7 +18,9 @@
         "freshness": 10.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/08/STK155_OPEN_AI_4_CVirginia_D.png?quality=90&amp;strip=all&amp;crop=0%2C10.742221417566%2C100%2C78.515557164868&amp;w=1200",
-      "published": "2026-04-17T17:13:25-04:00"
+      "published": "2026-04-17T17:13:25-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "51faebfd957e7425",
@@ -37,7 +39,9 @@
         "freshness": 10.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/world-id-tinder-verify.jpg?quality=90&amp;strip=all&amp;crop=0%2C3.4613147178592%2C100%2C93.077370564282&amp;w=1200",
-      "published": "2026-04-17T16:42:47-04:00"
+      "published": "2026-04-17T16:42:47-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "cb1631d546bfcfae",
@@ -56,7 +60,9 @@
         "freshness": 10.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/25469941/STK202_DARIO_AMODEI_CVIRGINIA_D.jpg?quality=90&amp;strip=all&amp;crop=0%2C10.732984293194%2C100%2C78.534031413613&amp;w=1200",
-      "published": "2026-04-17T16:14:21-04:00"
+      "published": "2026-04-17T16:14:21-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "1e5ec189b9966c21",
@@ -75,7 +81,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/268467_Poetry_Camera_AJohnson_0002.jpg?quality=90&amp;strip=all&amp;crop=0%2C10.723165084465%2C100%2C78.55366983107&amp;w=1200",
-      "published": "2026-04-17T13:30:00-04:00"
+      "published": "2026-04-17T13:30:00-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "69a830af23c91e15",
@@ -94,7 +102,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/gettyimages-2236326005.jpg?quality=90&amp;strip=all&amp;crop=0%2C10.663064393431%2C100%2C78.673871213138&amp;w=1200",
-      "published": "2026-04-17T11:46:37-04:00"
+      "published": "2026-04-17T11:46:37-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "09f5bd04b9c6851f",
@@ -113,7 +123,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/VRG_VST_0417_Site.jpg?quality=90&amp;strip=all&amp;crop=0%2C10.732984293194%2C100%2C78.534031413613&amp;w=1200",
-      "published": "2026-04-17T09:24:34-04:00"
+      "published": "2026-04-17T09:24:34-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "77c10788eac6c844",
@@ -132,7 +144,9 @@
         "freshness": 0.0
       },
       "thumbnail": "https://cdn-thumbnails.huggingface.co/social-thumbnails/blog/nvidia/nemotron-ocr-v2.png",
-      "published": "Fri, 17 Apr 2026 16:17:55 GMT"
+      "published": "Fri, 17 Apr 2026 16:17:55 GMT",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "b9f8a1d8f1e7ea79",
@@ -151,7 +165,9 @@
         "freshness": 0.0
       },
       "thumbnail": "https://wp.technologyreview.com/wp-content/uploads/2026/04/robot.jpg?resize=1200,600",
-      "published": "Fri, 17 Apr 2026 10:00:00 +0000"
+      "published": "Fri, 17 Apr 2026 10:00:00 +0000",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "33a00f2893b4b6b3",
@@ -170,7 +186,9 @@
         "freshness": 0.0
       },
       "thumbnail": "https://image.itmedia.co.jp/aiplus/articles/2604/18/cover_news022.jpg",
-      "published": "Sat, 18 Apr 2026 07:13:00 +0900"
+      "published": "Sat, 18 Apr 2026 07:13:00 +0900",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "5cc6669831cbb39e",
@@ -189,7 +207,9 @@
         "freshness": 0.0
       },
       "thumbnail": "https://image.itmedia.co.jp/aiplus/articles/2604/17/cover_news130.jpg",
-      "published": "Fri, 17 Apr 2026 19:13:00 +0900"
+      "published": "Fri, 17 Apr 2026 19:13:00 +0900",
+      "_is_video": false,
+      "_summary_clean": ""
     }
   ]
 }
