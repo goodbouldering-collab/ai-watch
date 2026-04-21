@@ -1,4 +1,195 @@
 {
+  "環境構築": {
+    "category": "STEP 1 / ステップ",
+    "short": "新しいプロジェクトを始めるための土台作り。Node / npm / .env / フォルダ構成を整える工程。",
+    "detail": "プログラミング開始前に必要な道具を揃える段階。Node.js をインストール → `npm init` でプロジェクト作成 → 必要なライブラリを入れて `package.json` / `.gitignore` / `.env` を整える。ここを雑にやると後の全工程が遅くなるが、一度仕組みを覚えれば 2〜3 分で終わる。VSCode のワークスペース設定・エディタ拡張(Prettier / ESLint / Tailwind IntelliSense)もこの段階で入れておく。",
+    "when": "新規プロジェクト開始時、他人のリポジトリを `git clone` した直後、マシンを新調したとき。",
+    "tip": "Node のバージョンはプロジェクトごとに違うことが多い。nvm-windows / Volta で切替可能にしておくと、複数案件を掛け持ちしたときに詰まらない。",
+    "related": ["Node.js", "npm", "package.json", ".env", "node_modules", ".gitignore"],
+    "url": null
+  },
+  "開発": {
+    "category": "STEP 2 / ステップ",
+    "short": "実際にコードを書いて機能を作る中心工程。ホットリロードで回しながら繰り返し修正する。",
+    "detail": "フレームワーク(Next.js / Vite)の上で React コンポーネント・API・スタイルを書いていく本体工程。`npm run dev` を常時起動して保存→ブラウザ確認のループを高速で回す。VSCode + TypeScript + Tailwind + AIアシスタント(Claude Code / Copilot)の組合せが現代の標準。DevTools でネットワーク・Console・Elements を見ながらデバッグする。",
+    "when": "新機能追加・既存機能の改修・バグ修正。プロジェクトのほとんどの時間がここ。",
+    "tip": "保存→F5の手動ループが消えるとコーディング速度が跳ね上がる。HMR が壊れたらハードリロードで再同期。1コミット1論点を意識して小さく進める。",
+    "related": ["Next.js", "Vite", "React", "TypeScript", "Tailwind", "npm run dev", "ホットリロード", "ポート番号", "VSCode", "DevTools"],
+    "url": null
+  },
+  "整理": {
+    "category": "STEP 3 / ステップ",
+    "short": "書き散らかしたコードを整える工程。リファクタ・命名改善・重複除去で未来の自分を助ける。",
+    "detail": "動くコードができた後、保守性を上げるために関数分割・命名変更・抽象化・共通化・ファイル整理を行う工程。ユニットテストが揃っていれば「振る舞いを変えない」ことを保証しつつ形を変えられる。Linter / Formatter で機械的に整う部分(インデント・引用符・セミコロン)は自動化、人間は設計と意図の改善に集中する。",
+    "when": "機能が動いた直後(記憶が新しいうちが最もコスパが良い)、3回目に同じコードを書いたとき、レビューで「読みにくい」指摘を受けたとき。",
+    "tip": "リファクタリング PR は機能追加と混ぜない。差分が読めなくなりレビュワーが疲弊する。VSCode の F2(Rename) / Ctrl+Shift+R(Extract) を積極活用。",
+    "related": ["リファクタリング", "Linter/Formatter", "ユニットテスト", "コードレビュー", "mapper層", "定数一元管理"],
+    "url": null
+  },
+  "Git管理": {
+    "category": "STEP 4 / ステップ",
+    "short": "コードの変更履歴を Git で追いかけ、GitHub 上でチーム/将来の自分と共有する工程。",
+    "detail": "`git add` → `git commit` → `git push` の三拍子が基本。機能追加ごとにブランチを切り、PR でレビューを受けて main にマージする。Issue で議論・マイルストーンで進捗管理・Dependabot で依存更新、まで含めて「共同作業の土俵」を Git と GitHub が担う。`.gitignore` を最初から整えて秘密・生成物を混入させない規律が重要。",
+    "when": "commit は作業の一区切り(数行〜数十行)ごと、push は1日の終わりか PR 準備時、pull は作業開始時。",
+    "tip": "force push は基本禁止(main には絶対)。小さい PR(200行以下)はレビュー速度も品質も上がる。commit メッセージは「なぜ」を書くと後から検索しやすい。",
+    "related": ["git init", "git clone", "git add / commit", "git push / pull", "ブランチ", "PR（プルリク）", "コンフリクト", "フォーク", "イシュー", "マイルストーン", "コードレビュー", ".gitignore", "Dependabot"],
+    "url": null
+  },
+  "テスト": {
+    "category": "STEP 5 / ステップ",
+    "short": "コードが意図通りに動くことを自動で保証する仕組み。ユニット→統合→E2E の3層がある。",
+    "detail": "手動で全機能を毎回確認するのは無理。ユニットテスト(関数単位)・統合テスト(DB+API+アプリ)・E2E(ブラウザ操作)の3層を組み合わせて CI で自動実行する。Linter / 型チェックもこの文脈に含まれ、コードを書いた瞬間にバグを弾く。テストがあれば怖がらずに整理・リファクタリングできる。",
+    "when": "機能実装と同時(理想は先にテストを書く TDD)。バグを修正したら再発防止テストを必ず添える。",
+    "tip": "カバレッジ100%より「クリティカルパスの E2E + ロジック関数のユニット」が費用対効果が高い。flaky(たまに落ちる)テストは即直すか skip、放置厳禁。",
+    "related": ["ユニットテスト", "統合テスト", "E2Eテスト", "Linter/Formatter", "TypeScript", "CI/CD"],
+    "url": null
+  },
+  "デプロイ": {
+    "category": "STEP 6 / ステップ",
+    "short": "書いたコードを本番サーバーに載せて、世界中から見られる状態にする工程。",
+    "detail": "`main` に push すると Vercel / Render / Netlify が自動で `npm run build` を走らせて成果物を CDN に配信する(Git 連携自動デプロイ)。PR ごとにプレビュー URL が生えるのでレビュー時に実機確認が可能。壊れたら 1 ボタンで前のデプロイにロールバックできる。独自ドメイン + HTTPS + 環境変数はこの段階でセット。",
+    "when": "機能が動いて CI が緑になったら即デプロイ。小さく頻繁にリリースするほど問題が起きても特定が早い。",
+    "tip": "本番環境変数を忘れがち(ローカルの .env は載らない)。最初のデプロイ時に env のチェックリストを作っておく。CDN キャッシュが古いまま残ることがあるので、デプロイ直後はハードリロードで確認。",
+    "related": ["ビルド", "CI/CD", "GitHub Actions", "プレビューデプロイ", "Vercel", "Render", "Netlify", "CDN", "HTTPS", "独自ドメイン", "環境変数", "ロールバック"],
+    "url": null
+  },
+  "運用": {
+    "category": "STEP 7 / ステップ",
+    "short": "公開したサービスを安定稼働させ続けるフェーズ。ログ・監視・アラート・SLA。",
+    "detail": "リリース後の方が長い。エラー監視(Sentry)・稼働監視(UptimeRobot)・パフォーマンス指標(Core Web Vitals)・ユーザー分析(GA4)でサービスの健康状態を常時把握する。異常時は Slack 通知でオンコールが動き、ログを見て原因特定→修正→再デプロイ。SLA / SLO の数値目標が「どこまで許容するか」の判断基準になる。",
+    "when": "リリース直後から半永久的に。とくに最初の1週間は貼り付いて監視、数値が安定してから手を離す。",
+    "tip": "アラート閾値は厳しすぎるとノイズで無視されるようになる。「本当に人間が動くべき信号」だけ鳴らすよう調整。個人プロダクトでも UptimeRobot 無料枠を入れておくと安心。",
+    "related": ["ログ", "エラー監視", "アラート", "SLA/SLO", "Lighthouse", "Core Web Vitals", "アナリティクス", "デバッグ", "ロールバック", "キャッシュ"],
+    "url": null
+  },
+
+  "環境構築（カード）": {
+    "category": "カード / STEP 1",
+    "short": "プロジェクトの土台を整えるカード。Node / npm / package.json / .env / .gitignore。",
+    "detail": "プログラミングを始める前に用意するものを集めたカード。JavaScript を PC で動かす Node.js、ライブラリ管理の npm、設計書の package.json、秘密値を隠す .env、Git 管理から除外する .gitignore が含まれる。新規プロジェクト立ち上げ時に最初に触る要素群。",
+    "when": "新規プロジェクトのセットアップ時、初めて触るリポジトリの理解のため、マシン再構築時。",
+    "tip": "初期段階で `.gitignore` に `node_modules` `.env` `.next` `dist` を必ず入れる。後から除外しても commit 済みファイルは `git rm --cached` が必要になる。",
+    "related": ["Node.js", "npm", "package.json", ".env", "node_modules", ".gitignore"],
+    "url": null
+  },
+  "フレームワーク・ライブラリ": {
+    "category": "カード / STEP 1-2",
+    "short": "UI と開発体験を支える道具一式。Next.js / Vite / React / TypeScript / Tailwind。",
+    "detail": "生の JavaScript だけで Web アプリを組むと量が膨大になる。現代ではフレームワーク(Next.js)か軽量ビルドツール(Vite)+UIライブラリ(React)+型(TypeScript)+スタイリング(Tailwind)の組合せが定番。プロジェクトの目的(SEO重視の公開サイト / インタラクティブな管理画面 / ライブラリ開発)で何を組み合わせるか決める。",
+    "when": "新規プロジェクト開始時の技術選定。既存プロジェクトのスタック把握。",
+    "tip": "Next.js は SSR / ルーティング / SEO 込みのフルスタック寄り、Vite は SPA 寄りで軽量。迷ったら Next.js。Tailwind は学習曲線がやや急だが、一度慣れると戻れない速度が出る。",
+    "related": ["Next.js", "Vite", "React", "TypeScript", "Tailwind"],
+    "url": null
+  },
+  "開発中の作業": {
+    "category": "カード / STEP 2-3",
+    "short": "実装フェーズで日常的に使う道具。VSCode / npm run dev / ホットリロード / デバッグ。",
+    "detail": "エディタ(VSCode)で書き、`npm run dev` で開発サーバーを起動し、ホットリロードで即確認、ブラウザの DevTools でデバッグ、Linter/Formatter で自動整形、という日常ループ。このループを高速に回せるほど生産性が上がる。ポート番号の管理も地味に大事(複数プロジェクトを同時に立ち上げるとき)。",
+    "when": "機能実装・バグ修正・UI 調整など、コードに手を入れる全時間。",
+    "tip": "VSCode の保存時自動整形(format on save)を有効にすると Prettier の整形が毎回走り、PR に無駄なスタイル差分が混ざらなくなる。",
+    "related": ["VSCode", "npm run dev", "ホットリロード", "ポート番号", "デバッグ", "DevTools", "Linter/Formatter"],
+    "url": null
+  },
+  "Git / バージョン管理": {
+    "category": "カード / STEP 4",
+    "short": "Git の基本操作とチーム運用のセット。add / commit / push / ブランチ / PR / コンフリクト。",
+    "detail": "変更履歴を時間軸で管理するツール群。`git init` / `git clone` で始まり、`git add` → `commit` → `push` で履歴を記録、`pull` で他者の変更を取り込む。機能ごとにブランチを切り、PR でレビュー、コンフリクトを解消してマージ。フォーク・Issue・マイルストーンは GitHub の共同作業機能。",
+    "when": "どんなプロジェクトでも必須。個人開発でも「過去の自分を頼る」ために使う。",
+    "tip": "`git log --oneline --graph` で履歴を可視化、`git bisect` で壊れた commit を二分探索。GUI 派なら VSCode 内蔵 Git や GitLens 拡張が便利。",
+    "related": ["git init", "git clone", "git add / commit", "git push / pull", "ブランチ", "PR（プルリク）", "コンフリクト", "フォーク", "イシュー", "マイルストーン", "コードレビュー"],
+    "url": null
+  },
+  "テスト・環境": {
+    "category": "カード / STEP 5",
+    "short": "品質担保と作業環境の基盤。ユニット/統合/E2E テスト、Linter、サンドボックス。",
+    "detail": "自動テスト3層 + 静的解析 + 隔離環境(sandbox)で、リリース前にバグを弾き、本番データを汚さず検証する。CI で自動実行してグリーンじゃないと main にマージできないルールにすると、デグレが激減する。",
+    "when": "機能実装と同時並行、PR マージ前、定期リファクタ前の安全ネット。",
+    "tip": "テストコードは書いたら終わりではない。壊れたら即直す、曖昧になったら書き直す。古いテストが残っていると「テストがあるのにバグる」最悪の状態になる。",
+    "related": ["ユニットテスト", "統合テスト", "E2Eテスト", "Linter/Formatter", "サンドボックス", "CI/CD"],
+    "url": null
+  },
+  "デプロイ・公開": {
+    "category": "カード / STEP 6",
+    "short": "本番リリースの仕組み一式。ビルド / CI/CD / Vercel / Render / CDN / HTTPS / ロールバック。",
+    "detail": "コードを世界に届けるための段取り。ビルドで成果物を作り、CI/CD が自動でホスティングにデプロイ、CDN 経由で世界中に HTTPS 配信、独自ドメインを繋いでブランドを整える。プレビューデプロイで PR 段階の実機確認、ロールバックで事故からの復旧を担保する。",
+    "when": "リリース戦略を立てるとき、本番事故の備え、ホスティング選定。",
+    "tip": "無料プラン依存のスタックは「急に使えなくなる」リスクを抱える(Netlify Forms の上限、Render 無料のスリープ等)。事業用途は最低 Starter に上げる。",
+    "related": ["ビルド", "CI/CD", "GitHub Actions", "プレビューデプロイ", "Vercel", "Render", "Netlify", "CDN", "HTTPS", "独自ドメイン", "ロールバック", "環境変数"],
+    "url": null
+  },
+  "データベース・バックエンド": {
+    "category": "カード / STEP 2-3",
+    "short": "データを保存・認証・API 化する層。Supabase / Postgres / ORM / 認証 / JWT / RLS。",
+    "detail": "フロントだけでは閉じないアプリにはデータ永続化・認証・API が必要。Supabase(Postgres + Auth + Storage + Functions)を中心に、ORM(Prisma / Drizzle)で型安全に DB を触り、JWT でセッションを管理、RLS でマルチテナントアクセス制御、REST / GraphQL で API 公開、という一式。本プロジェクト群では Supabase を標準採用。",
+    "when": "ログイン・投稿・決済・ダッシュボードなどデータを扱う全機能。",
+    "tip": "RLS を無効のままサービスロールキーをブラウザに出す事故が最多。開発初期に「RLS 有効 + anon key のみ露出」を必ず確認。mapper 層(snake_case↔camelCase)も最初に仕込む。",
+    "related": ["Supabase", "Postgres", "ORM", "認証（Auth）", "JWT", "RLS（行レベル）", "REST / GraphQL", "マイグレーション", "Firebase", "mapper層"],
+    "url": null
+  },
+  "SEO・LLMO（AI検索最適化）": {
+    "category": "カード / STEP 3",
+    "short": "検索エンジンと AI 検索に拾われるための最適化。メタタグ / JSON-LD / sitemap / Speakable。",
+    "detail": "Google の伝統的 SEO(メタタグ / canonical / sitemap.xml / robots.txt / Core Web Vitals)に加え、2024 年以降は LLMO(ChatGPT / Perplexity / Google AI Overviews に引用される最適化)が重要。構造化データ(JSON-LD: BlogPosting / FAQPage / SpeakableSpecification)を正しく吐くと AI が要約時に引用元として採用しやすくなる。アナリティクスで効果計測。",
+    "when": "公開するコンテンツサイト・ブログ・EC・サービス紹介ページ全般。",
+    "tip": "Google Search Console / Rich Results Test で構造化データをバリデート。記事公開時に sitemap を更新してクロールを促す。AI に引用されたいなら冒頭に簡潔な要約を置く。",
+    "related": ["メタタグ", "canonical", "sitemap.xml", "robots.txt", "JSON-LD", "BlogPosting", "FAQPage", "Speakable", "Core Web Vitals", "Lighthouse", "アナリティクス"],
+    "url": null
+  },
+  "セキュリティ": {
+    "category": "カード / STEP 2-6",
+    "short": "攻撃と事故からユーザーを守る基本。HTTPS / CORS / CSRF / XSS / SQL / APIキー / RLS。",
+    "detail": "セキュリティは開発全段階に関わる横串のテーマ。通信を HTTPS で暗号化、CORS で異なるドメインからの API アクセスを制御、CSRF トークンで偽リクエストを防ぎ、XSS 対策で入力を必ずエスケープ、SQL は必ずパラメータ化、API キーは環境変数に隔離、DB は RLS でアクセス分離。Dependabot で依存の脆弱性を自動検知。",
+    "when": "プロジェクト開始時の設計から運用監視まで、常時意識する。",
+    "tip": "OWASP Top 10 を一度通読しておくと「何が起きうるか」の土地勘がつく。実装時は「信頼できない入力は必ず検証」を口癖に。",
+    "related": ["HTTPS", "CORS", "CSRF", "XSS対策", "SQLインジェクション", "認証（Auth）", "JWT", "RLS（行レベル）", "APIキー管理", ".env", "環境変数", "Dependabot"],
+    "url": null
+  },
+  "パフォーマンス・運用監視": {
+    "category": "カード / STEP 7",
+    "short": "速度改善と本番監視。Lighthouse / Core Web Vitals / 画像最適化 / ログ / エラー監視。",
+    "detail": "ユーザー体験の土台は「速い」「落ちない」。Lighthouse で品質を定量化し、Core Web Vitals(LCP / INP / CLS)を満たす画像最適化・キャッシュ・遅延読み込みを適用。本番はエラー監視(Sentry)・構造化ログ・アラート閾値の設計で異常を即検知し、SLA / SLO の数値で品質を言語化する。",
+    "when": "公開後の継続運用、リファクタや大規模変更後の回帰確認、障害対応の初動設計。",
+    "tip": "Lighthouse スコアより「ユーザーの実測値(RUM / Chrome UX Report)」の方が現実を映す。改善は大きい要素(LCP 画像 / JS バンドル)から順に。",
+    "related": ["Lighthouse", "Core Web Vitals", "画像最適化", "キャッシュ", "CDN", "ログ", "エラー監視", "アラート", "SLA/SLO", "DevTools", "ロールバック"],
+    "url": null
+  },
+  "チーム開発・プロジェクト管理": {
+    "category": "カード / STEP 7",
+    "short": "複数人で開発を回す仕組み。PR レビュー / スプリント / マイルストーン / モノレポ。",
+    "detail": "ソロ開発と違い、複数人ではコミュニケーションと同期コストが跳ね上がる。PR ベースのレビュー文化、アジャイルのスプリント運用、マイルストーンでの進捗管理、Issue による議論の可視化、Turborepo 等のモノレポで関連コードを近くに置く、といった仕組みを揃えてチームの認知負荷を下げる。",
+    "when": "2人以上のチーム開発、複数プロジェクトの統括運用、長期メンテナンスが必要なコード資産。",
+    "tip": "儀式だけのスクラムは逆効果。レトロで継続改善する意思がチームにあるかどうかが成否を分ける。小さい PR + 高速 CI がチームの速度の源泉。",
+    "related": ["PR（プルリク）", "コードレビュー", "イシュー", "マイルストーン", "アジャイル", "スプリント", "Turborepo", "CI/CD"],
+    "url": null
+  },
+  "デプロイ後の全体構成図": {
+    "category": "完成イメージ / 総合",
+    "short": "ローカルの VSCode から GitHub → CI/CD → ホスティング(CDN) → ユーザー、の流れ。",
+    "detail": "開発者の PC で書いたコードが本番ユーザーに届くまでの道のり。VSCode → git push → GitHub の main ブランチ → GitHub Actions / ホスティング側 CI で自動ビルド・テスト → Vercel / Render 等にデプロイ → CDN で世界配信 → ユーザーのブラウザ/スマホに HTTPS で表示、という一連の流れ。.env は PC とホスティング側で別管理。",
+    "when": "新メンバーへのオンボーディング、アーキテクチャ説明、障害時にどこで止まっているか切り分けるとき。",
+    "tip": "この図の各箇所で「失敗したらどう検知するか」を決めておくと運用が安定する(CI 失敗は Slack 通知、本番エラーは Sentry、稼働停止は UptimeRobot 等)。",
+    "related": ["VSCode", "git push / pull", "GitHub Actions", "CI/CD", "ビルド", "Vercel", "Render", "CDN", "HTTPS", "独自ドメイン", "環境変数", "ログ"],
+    "url": null
+  },
+  "AIエンジニアリング手法 — 全体像": {
+    "category": "AI時代の新潮流 / 総合",
+    "short": "LLM を組み込んだアプリを作る / 動かすための層構造。プロンプト〜統括〜評価〜安全までの7領域。",
+    "detail": "2024 年以降に急速に確立した新分野。大きく7層に分かれる: (1)プロンプトエンジニアリング=AIへの指示設計、(2)コンテキストエンジニアリング=投入情報の設計(RAG など)、(3)ハーネス=実行環境・ツール使用の仕組み、(4)評価=出力品質の自動測定、(5)統括(オーケストレーション)=複数エージェントやツールの連携、(6)調整(チューニング)=ファインチューニングや蒸留、(7)安全=プロンプトインジェクション対策や出力監査。各層が噛み合うと複雑タスクを AI に任せられる。",
+    "when": "LLM を使った機能(チャットボット・自動要約・エージェント・RAG 検索)を実装するとき。",
+    "tip": "最初はプロンプト設計だけで十分な場面が多い。RAG / エージェント / ファインチューニングは「素のプロンプトで届かない」と明確になってから導入する。",
+    "related": ["Prompt", "役割指定", "Few-shot", "CoT", "RAG", "Embedding", "Tool Use", "Agent", "Context Window"],
+    "url": null
+  },
+  "マルチクライアント統括運用 — 3層アーキテクチャ": {
+    "category": "本プロジェクト固有 / 総合",
+    "short": "複数クライアントサイトを1ワークスペースで運用する本プロジェクトの独自構成。",
+    "detail": "本プロジェクト群では(1)本番クライアント層=各社の実コード(ポート3001〜3009)、(2)CMAログ置き場=Managed Agentsの実行ログ、(3)CMA完成品置き場=採用した生成物の保管、の3層で成り立つ。ポート自動割当(set-ports.js)、VSCode ワークスペース統合、GitHub+Supabase+Render+GitHub Actionsの共通デプロイ構成、などでスケールさせる。",
+    "when": "新規クライアントを追加するとき、CMA エージェントに作業を任せるとき、3層のどこで何が起きているか判断するとき。",
+    "tip": "ワークスペースの意味が重なりやすい(CMAの Environment / ローカルの workspace_* / VSCode Workspace)。CMA が動かすのはクラウド上の一時 Environment で、手元の workspace_* は成果物倉庫ではなくログ置き場と割り切る。",
+    "related": ["VSCode", "ポート番号", "CI/CD", "Supabase", "Render", "GitHub Actions", "環境変数"],
+    "url": null
+  },
+
   "Node.js": {
     "category": "ランタイム",
     "short": "ブラウザの外で JavaScript を動かす実行環境。開発ツールやサーバーの土台。",

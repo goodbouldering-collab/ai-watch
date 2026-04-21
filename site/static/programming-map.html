@@ -476,6 +476,42 @@
     opacity: .6;
   }
   .tag[data-term]:hover::after { opacity: 1; }
+
+  /* ステップラベル & カード見出しもクリック可能に */
+  .ps-label[data-term],
+  .card-title-wrap[data-term] {
+    cursor: pointer;
+    position: relative;
+    transition: all .2s ease;
+  }
+  .ps-label[data-term]::after,
+  .card-title-wrap[data-term] h2::after {
+    content: "ⓘ";
+    margin-left: 6px;
+    font-size: 0.7em;
+    opacity: .45;
+    font-weight: 400;
+    vertical-align: middle;
+  }
+  .ps-label[data-term]:hover::after,
+  .card-title-wrap[data-term]:hover h2::after { opacity: 1; }
+  .ps-label[data-term]:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.15);
+  }
+  .card-title-wrap[data-term]:hover h2 {
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: rgba(0,0,0,.25);
+    text-underline-offset: 4px;
+  }
+  .ps-label[data-term]:focus-visible,
+  .card-title-wrap[data-term]:focus-visible {
+    outline: 2px solid var(--accent1);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
   .tag.starred { box-shadow: 0 0 0 2px #fbbf24 inset; }
   .tag.starred::before {
     content: "★";
@@ -1952,46 +1988,68 @@
     return loadingPromise;
   }
 
+  // カード h2 のテキスト → 辞書キーのマッピング(「環境構築」はステップと衝突するのでカード側を退避)
+  const CARD_TITLE_MAP = {
+    '環境構築': '環境構築（カード）'
+  };
+
+  function bindPopup(el, term) {
+    el.setAttribute('data-term', term);
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-label', term + ' の詳細を表示');
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openModal(term);
+    });
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openModal(term);
+      }
+    });
+  }
+
   // ---- 初期化: タグ収集 ----
   function initTags() {
+    // 1. カード内の .tag(用語)
     const tags = document.querySelectorAll('.tag');
-    const seenFirst = new Map();
     tags.forEach(tag => {
       const term = tag.textContent.trim();
       if (!term) return;
-      tag.setAttribute('data-term', term);
-      tag.setAttribute('tabindex', '0');
-      tag.setAttribute('role', 'button');
-      tag.setAttribute('aria-label', term + ' の詳細を表示');
-      tag.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openModal(term);
-      });
-      tag.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          openModal(term);
-        }
-      });
-      // 同じ term が複数あっても最初のものを代表にする
-      if (!seenFirst.has(term)) {
-        seenFirst.set(term, tag);
+      bindPopup(tag, term);
+    });
+
+    // 2. 進捗バーのステップラベル
+    document.querySelectorAll('.ps-label').forEach(label => {
+      const term = label.textContent.trim();
+      if (!term) return;
+      bindPopup(label, term);
+    });
+
+    // 3. 各カードの見出し(card-title-wrap)
+    document.querySelectorAll('.card-title-wrap').forEach(wrap => {
+      const h2 = wrap.querySelector('h2');
+      if (!h2) return;
+      const raw = h2.textContent.trim();
+      const term = CARD_TITLE_MAP[raw] || raw;
+      bindPopup(wrap, term);
+    });
+
+    // 4. allTerms / termEls を構築(タグ→先頭要素、検索対象)
+    const seen = new Set();
+    document.querySelectorAll('.tag[data-term]').forEach(el => {
+      const term = el.getAttribute('data-term');
+      if (!seen.has(term)) {
+        seen.add(term);
         allTerms.push(term);
       }
-      termEls.set(term + '@@' + Array.from(document.querySelectorAll('[data-term="'+CSS.escape(term)+'"]')).length, tag);
     });
-    // 再構築(key を term そのものに戻す: Map に同名2つあると上書きされるので、複数要素管理)
     termEls = new Map();
-    tags.forEach(tag => {
-      const term = tag.getAttribute('data-term');
-      if (!term) return;
-      if (!termEls.has(term)) termEls.set(term, []);
-      termEls.get(term).push(tag);
+    document.querySelectorAll('.tag[data-term]').forEach(el => {
+      const term = el.getAttribute('data-term');
+      if (!termEls.has(term)) termEls.set(term, el);
     });
-    // termEls を「term -> 先頭要素」に簡略化(検索表示用の配列と星マーク更新が楽)
-    const flat = new Map();
-    termEls.forEach((els, term) => { flat.set(term, els[0]); });
-    termEls = flat;
     refreshStarMarks();
     updateCount();
   }
