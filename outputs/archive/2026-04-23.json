@@ -18,7 +18,9 @@
         "freshness": 10.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/anthropic-claude-personal-apps.jpg?quality=90&amp;strip=all&amp;crop=0%2C3.4613147178592%2C100%2C93.077370564282&amp;w=1200",
-      "published": "2026-04-23T18:27:11-04:00"
+      "published": "2026-04-23T18:27:11-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "6b0e9c4f9149794d",
@@ -37,7 +39,9 @@
         "freshness": 10.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/gettyimages-2235448475.jpg?quality=90&amp;strip=all&amp;crop=0%2C10.723165084465%2C100%2C78.55366983107&amp;w=1200",
-      "published": "2026-04-23T15:41:07-04:00"
+      "published": "2026-04-23T15:41:07-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "5378de83e6f45431",
@@ -56,7 +60,9 @@
         "freshness": 10.0
       },
       "thumbnail": "https://static.simonwillison.net/static/2026/liteparse-web-card.jpg",
-      "published": "2026-04-23T21:54:24+00:00"
+      "published": "2026-04-23T21:54:24+00:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "5247e4701c6fb308",
@@ -75,7 +81,9 @@
         "freshness": 10.0
       },
       "thumbnail": "https://static.simonwillison.net/static/2026/gpt-5.5-pelican-xhigh.png",
-      "published": "2026-04-23T19:59:47+00:00"
+      "published": "2026-04-23T19:59:47+00:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "41998e64e0c90936",
@@ -94,7 +102,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/23318433/akrales_220309_4977_0182.jpg?quality=90&amp;strip=all&amp;crop=0%2C10.732984293194%2C100%2C78.534031413613&amp;w=1200",
-      "published": "2026-04-23T14:24:56-04:00"
+      "published": "2026-04-23T14:24:56-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "a657f94663b556fe",
@@ -113,7 +123,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/03/STK155_OPEN_AI_CVirginia__C.jpg?quality=90&amp;strip=all&amp;crop=0%2C10.732984293194%2C100%2C78.534031413613&amp;w=1200",
-      "published": "2026-04-23T14:00:00-04:00"
+      "published": "2026-04-23T14:00:00-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "bf1076f42e7dbb28",
@@ -132,7 +144,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/VRG_DCD_Software_Brain.jpg?quality=90&amp;strip=all&amp;crop=0%2C10.732984293194%2C100%2C78.534031413613&amp;w=1200",
-      "published": "2026-04-23T10:00:00-04:00"
+      "published": "2026-04-23T10:00:00-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "72a57e7fc3ba96ee",
@@ -151,7 +165,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/vincentkilbride-theverge-ai-monetisation.jpg?quality=90&amp;strip=all&amp;crop=0%2C10.732984293194%2C100%2C78.534031413613&amp;w=1200",
-      "published": "2026-04-23T09:45:00-04:00"
+      "published": "2026-04-23T09:45:00-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "21a1a393bac86ffa",
@@ -170,7 +186,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/09/excelagentmode.jpg?quality=90&amp;strip=all&amp;crop=0%2C3.477724691513%2C100%2C93.044550616974&amp;w=1200",
-      "published": "2026-04-23T07:34:18-04:00"
+      "published": "2026-04-23T07:34:18-04:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "46090699ad9534d2",
@@ -189,7 +207,9 @@
         "freshness": 6.0
       },
       "thumbnail": "",
-      "published": "2026-04-23T13:35:37+00:00"
+      "published": "2026-04-23T13:35:37+00:00",
+      "_is_video": false,
+      "_summary_clean": ""
     }
   ]
 }
