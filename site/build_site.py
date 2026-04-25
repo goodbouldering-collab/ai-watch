@@ -29,6 +29,7 @@ TOP10_JSON = ROOT / "outputs" / "top10.json"
 ARCHIVE_DIR = ROOT / "outputs" / "archive"
 GENRES_YAML = ROOT / "config" / "genres.yaml"
 SUPPORT_SNS_YAML = ROOT / "config" / "support_sns.yaml"
+TOP_BUTTONS_YAML = ROOT / "config" / "top_buttons.yaml"
 DIST = ROOT / "site" / "dist"
 STATIC = ROOT / "site" / "static"
 
@@ -56,6 +57,59 @@ def load_genres() -> list[dict]:
         return []
     data = yaml.safe_load(GENRES_YAML.read_text(encoding="utf-8"))
     return data.get("genres", [])
+
+
+DEFAULT_TOP_BUTTONS = [
+    {"id": "speaker",         "label": "講師紹介",           "icon": "🎤", "href": "./speaker.html",            "kind": "link",   "enabled": True},
+    {"id": "portfolio",       "label": "実績",               "icon": "🏆", "href": "./portfolio.html",          "kind": "link",   "enabled": True},
+    {"id": "lectures",        "label": "講習資料",           "icon": "📝", "href": "./lectures/index.html",     "kind": "link",   "enabled": True},
+    {"id": "archive",         "label": "過去ログ",           "icon": "📚", "href": "./archive.html",            "kind": "link",   "enabled": True},
+    {"id": "programming_map", "label": "プログラミングマップ", "icon": "📘", "href": "./programming-map.html",    "kind": "link",   "enabled": True},
+    {"id": "run",             "label": "巡回実行",           "icon": "🔄", "href": "",                          "kind": "action", "action_id": "run", "enabled": True},
+]
+
+
+def load_top_buttons() -> list[dict]:
+    if not TOP_BUTTONS_YAML.exists():
+        return DEFAULT_TOP_BUTTONS
+    try:
+        data = yaml.safe_load(TOP_BUTTONS_YAML.read_text(encoding="utf-8")) or {}
+        items = data.get("top_buttons") or []
+        if not items:
+            return DEFAULT_TOP_BUTTONS
+        return items
+    except Exception:
+        return DEFAULT_TOP_BUTTONS
+
+
+def render_top_nav(include_run: bool = True) -> str:
+    """トップページのナビを config/top_buttons.yaml から生成。"""
+    buttons = load_top_buttons()
+    parts: list[str] = ["<nav>"]
+    has_run = False
+    for b in buttons:
+        if not b.get("enabled", True):
+            continue
+        label = html.escape(str(b.get("label", "")))
+        icon = html.escape(str(b.get("icon", "")))
+        kind = b.get("kind", "link")
+        text = f"{icon} {label}".strip()
+        if kind == "action":
+            action_id = b.get("action_id") or b.get("id") or "run"
+            if action_id == "run":
+                if not include_run:
+                    continue
+                has_run = True
+                parts.append(f"<button type='button' id='run-btn' class='run-btn'>{text}</button>")
+        else:
+            href = html.escape(str(b.get("href", "")), quote=True)
+            if not href:
+                continue
+            parts.append(f"<a href='{href}'>{text}</a> ")
+    if has_run:
+        parts.append("<span id='run-status' class='run-status'></span>")
+    parts.append("</nav>")
+    return "".join(parts)
 
 
 def load_support_sns() -> dict:
@@ -454,16 +508,7 @@ def render_index(payload: dict, genres: list[dict]) -> str:
     parts.append("<header>")
     parts.append("<h1>AI-watch</h1>")
     parts.append(f"<p class='sub'>{date} ・ 今日の注目Top{total} ・ クリックで好みを学習</p>")
-    parts.append(
-        "<nav>"
-        "<a href='./speaker.html'>🎤 講師紹介</a> "
-        "<a href='./lectures/index.html'>📝 講習資料</a> "
-        "<a href='./archive.html'>📚 過去ログ</a> "
-        "<a href='./programming-map.html'>📘 プログラミングマップ</a> "
-        "<button type='button' id='run-btn' class='run-btn'>🔄 巡回実行</button>"
-        "<span id='run-status' class='run-status'></span>"
-        "</nav>"
-    )
+    parts.append(render_top_nav(include_run=True))
     parts.append("</header>")
 
     if not items:
@@ -671,7 +716,7 @@ def render_archive(dates: list[str]) -> str:
     parts.append("<header>")
     parts.append("<h1>過去ログ</h1>")
     parts.append(f"<p class='sub'>アーカイブ {len(dates)}件</p>")
-    parts.append("<nav><a href='./index.html'>📰 最新に戻る</a> <a href='./speaker.html'>🎤 講師紹介</a> <a href='./programming-map.html'>📘 プログラミングマップ</a></nav>")
+    parts.append("<nav><a href='./index.html'>📰 最新に戻る</a> <a href='./speaker.html'>🎤 講師紹介</a> <a href='./portfolio.html'>🏆 実績</a> <a href='./lectures/index.html'>📝 講習資料</a> <a href='./programming-map.html'>📘 プログラミングマップ</a></nav>")
     parts.append("</header>")
     if dates:
         parts.append("<ul style='list-style:none;padding:0;margin:0'>")
@@ -693,6 +738,7 @@ def render_archive(dates: list[str]) -> str:
 CONTENT_DIR = ROOT / "content"
 SPEAKER_MD = CONTENT_DIR / "speaker.md"
 LECTURES_DIR = CONTENT_DIR / "lectures"
+PORTFOLIO_YAML = ROOT / "config" / "portfolio.yaml"
 
 CONTENT_CSS = """
 .content-wrap {
@@ -824,6 +870,90 @@ CONTENT_CSS = """
   z-index: 50;
 }
 .back-to-top.show { display: flex; }
+
+/* ---- Portfolio ---- */
+.pf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 16px 0 8px;
+}
+.pf-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 14px 16px 12px;
+  transition: transform .15s, border-color .15s, box-shadow .15s;
+  text-decoration: none;
+  color: inherit;
+  min-height: 150px;
+}
+.pf-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(122,162,255,.45);
+  box-shadow: 0 10px 26px rgba(8,12,30,.45);
+}
+.pf-card .pf-title {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text);
+  background: linear-gradient(100deg, var(--accent1), var(--accent3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.pf-card .pf-host {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 2px;
+  word-break: break-all;
+}
+.pf-card .pf-sum {
+  font-size: 13px;
+  color: #d3d8ea;
+  line-height: 1.55;
+  margin: 8px 0 10px;
+  flex: 1;
+}
+.pf-card .pf-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+}
+.pf-card .pf-chip {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(122,162,255,.14);
+  color: #c7d2ff;
+  border: 1px solid rgba(122,162,255,.25);
+}
+.pf-card .pf-chip.cat {
+  background: rgba(255,122,182,.14);
+  color: #ffd4ea;
+  border-color: rgba(255,122,182,.3);
+}
+.pf-card .pf-chip.retired { background: rgba(120,120,120,.2); color: #aaa; }
+.pf-card .pf-chip.dev { background: rgba(250,204,21,.15); color: #fde68a; border-color: rgba(250,204,21,.35); }
+.pf-section-title {
+  font-size: 13px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent1);
+  margin: 22px 0 4px;
+  font-weight: 700;
+}
+.pf-note {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 18px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--accent2);
+  background: rgba(255,255,255,.03);
+  border-radius: 0 10px 10px 0;
+}
 """
 
 
@@ -945,7 +1075,8 @@ def render_content_page(title: str, meta: dict, body_html: str, nav_html: str, p
     parts.append(f"<link rel='canonical' href='{html.escape(page_url, quote=True)}'>")
     parts.append(_build_ogp(title, desc, page_url, "article" if kind in ("lecture", "speaker") else "website"))
     if kind:
-        ld = _build_jsonld(kind, meta, title, page_url)
+        jsonld_kind = "website" if kind == "portfolio" else kind
+        ld = _build_jsonld(jsonld_kind, meta, title, page_url)
         if ld:
             parts.append(f"<script type='application/ld+json'>{ld}</script>")
     parts.append(f"<style>{CSS}{CONTENT_CSS}</style></head><body><div class='container'>")
@@ -992,8 +1123,9 @@ def build_speaker_page() -> bool:
     nav = (
         "<nav>"
         "<a href='./index.html'>🏠 トップ</a> "
-        "<a href='./programming-map.html'>📘 プログラミングマップ</a> "
+        "<a href='./portfolio.html'>🏆 実績</a> "
         "<a href='./lectures/index.html'>📝 講習資料</a> "
+        "<a href='./programming-map.html'>📘 プログラミングマップ</a> "
         "<a href='./archive.html'>📚 過去ログ</a>"
         "</nav>"
     )
@@ -1019,6 +1151,7 @@ def build_lectures() -> int:
             "<nav>"
             "<a href='../index.html'>🏠 トップ</a> "
             "<a href='../speaker.html'>🎤 講師紹介</a> "
+            "<a href='../portfolio.html'>🏆 実績</a> "
             "<a href='./index.html'>📝 資料一覧</a>"
             "</nav>"
         )
@@ -1037,7 +1170,8 @@ def build_lectures() -> int:
         nav = (
             "<nav>"
             "<a href='../index.html'>🏠 トップ</a> "
-            "<a href='../speaker.html'>🎤 講師紹介</a>"
+            "<a href='../speaker.html'>🎤 講師紹介</a> "
+            "<a href='../portfolio.html'>🏆 実績</a>"
             "</nav>"
         )
         (out_dir / "index.html").write_text(
@@ -1045,6 +1179,147 @@ def build_lectures() -> int:
             encoding="utf-8",
         )
     return count
+
+
+_OGP_TITLE_RE = re.compile(r"<meta[^>]+property=['\"]og:title['\"][^>]+content=['\"]([^'\"]+)['\"]", re.I)
+_OGP_DESC_RE = re.compile(r"<meta[^>]+property=['\"]og:description['\"][^>]+content=['\"]([^'\"]+)['\"]", re.I)
+_TITLE_RE = re.compile(r"<title[^>]*>([^<]+)</title>", re.I)
+_DESC_RE = re.compile(r"<meta[^>]+name=['\"]description['\"][^>]+content=['\"]([^'\"]+)['\"]", re.I)
+
+
+def _fetch_meta(url: str, timeout: float = 3.0) -> dict:
+    """URL から og:title/og:description/<title>/meta[description] を拾う。失敗時は空 dict。"""
+    try:
+        import urllib.request
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "Mozilla/5.0 AI-watch-portfolio-bot/1.0",
+            "Accept": "text/html,application/xhtml+xml",
+        })
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            raw = resp.read(200_000)  # 先頭 200KB で十分
+            charset = resp.headers.get_content_charset() or "utf-8"
+        try:
+            text = raw.decode(charset, errors="replace")
+        except LookupError:
+            text = raw.decode("utf-8", errors="replace")
+        meta = {}
+        m = _OGP_TITLE_RE.search(text)
+        if m: meta["title"] = m.group(1).strip()
+        m = _OGP_DESC_RE.search(text)
+        if m: meta["desc"] = m.group(1).strip()
+        if "title" not in meta:
+            m = _TITLE_RE.search(text)
+            if m: meta["title"] = m.group(1).strip()
+        if "desc" not in meta:
+            m = _DESC_RE.search(text)
+            if m: meta["desc"] = m.group(1).strip()
+        return meta
+    except Exception:
+        return {}
+
+
+def _host_of(url: str) -> str:
+    try:
+        from urllib.parse import urlparse
+        return urlparse(url).hostname or url
+    except Exception:
+        return url
+
+
+def build_portfolio_page() -> bool:
+    if not PORTFOLIO_YAML.exists():
+        return False
+    try:
+        raw = yaml.safe_load(PORTFOLIO_YAML.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return False
+    items = raw.get("portfolio") or []
+    if not items:
+        return False
+
+    online = os.environ.get("AIWATCH_PORTFOLIO_NO_FETCH") != "1"
+
+    # カテゴリでグループ化(定義順を維持)
+    grouped: dict[str, list[dict]] = {}
+    cat_order: list[str] = []
+    for it in items:
+        if it.get("status") == "retired":
+            continue
+        cat = it.get("category") or "その他"
+        if cat not in grouped:
+            grouped[cat] = []
+            cat_order.append(cat)
+        grouped[cat].append(it)
+
+    # オンラインなら OGP を軽く取りに行く
+    for cat in cat_order:
+        for it in grouped[cat]:
+            if not online:
+                break
+            meta = _fetch_meta(str(it.get("url")))
+            if meta.get("title") and not it.get("_title"):
+                it["_title"] = meta["title"]
+            if meta.get("desc") and not it.get("_desc"):
+                it["_desc"] = meta["desc"]
+
+    parts: list[str] = ["<h1>🏆 実績・運営サイト</h1>"]
+    parts.append(
+        "<p>このワークスペース(Claude/配下)で制作・運営しているサイトを、カテゴリ別に掲載。"
+        "各サイトは現在の公開ドメインを設定ファイル (<code>config/portfolio.yaml</code>) から引き、"
+        "ドメインが変わったら 1 箇所書き換えるだけで全リンクが追従する。</p>"
+    )
+
+    for cat in cat_order:
+        parts.append(f"<h2>{html.escape(cat)}</h2>")
+        parts.append("<div class='pf-grid'>")
+        for it in grouped[cat]:
+            url = str(it.get("url") or "")
+            name = str(it.get("name") or url)
+            host = _host_of(url)
+            summary = str(it.get("_desc") or it.get("summary") or "")
+            if len(summary) > 140:
+                summary = summary[:137] + "…"
+            status = str(it.get("status") or "live")
+            tech = it.get("tech") or []
+            since = str(it.get("since") or "")
+
+            parts.append(f"<a class='pf-card' href='{html.escape(url, quote=True)}' target='_blank' rel='noopener'>")
+            parts.append(f"<div class='pf-title'>{html.escape(name)}</div>")
+            parts.append(f"<div class='pf-host'>{html.escape(host)}</div>")
+            if summary:
+                parts.append(f"<div class='pf-sum'>{html.escape(summary)}</div>")
+            parts.append("<div class='pf-meta'>")
+            parts.append(f"<span class='pf-chip cat'>{html.escape(cat)}</span>")
+            if status != "live":
+                parts.append(f"<span class='pf-chip {html.escape(status)}'>{html.escape(status)}</span>")
+            for t in tech:
+                parts.append(f"<span class='pf-chip'>{html.escape(str(t))}</span>")
+            if since:
+                parts.append(f"<span class='pf-chip'>since {html.escape(since)}</span>")
+            parts.append("</div>")
+            parts.append("</a>")
+        parts.append("</div>")
+
+    parts.append(
+        "<p class='pf-note'>💡 新しいサイトを追加する場合は <code>config/portfolio.yaml</code> に 1 ブロック追記。"
+        "ドメイン変更時も同ファイルで URL を差し替えるだけ。"
+        "オフラインビルドや CI で外部取得を止めたい場合は <code>AIWATCH_PORTFOLIO_NO_FETCH=1</code> を設定。</p>"
+    )
+    body_html = "".join(parts)
+    meta = {
+        "summary": "AI-watch 講師の由井辰美が制作・運営している実績サイト一覧。カテゴリ・技術スタック・公開年で絞って俯瞰できる。",
+    }
+    nav = (
+        "<nav>"
+        "<a href='./index.html'>🏠 トップ</a> "
+        "<a href='./speaker.html'>🎤 講師紹介</a> "
+        "<a href='./lectures/index.html'>📝 講習資料</a> "
+        "<a href='./programming-map.html'>📘 プログラミングマップ</a>"
+        "</nav>"
+    )
+    html_text = render_content_page("実績サイト", meta, body_html, nav, page_path="portfolio.html", kind="portfolio")
+    (DIST / "portfolio.html").write_text(html_text, encoding="utf-8")
+    return True
 
 
 def copy_static() -> None:
@@ -1073,6 +1348,7 @@ def build_sitemap_and_robots() -> None:
 
     add("index.html", 1.0)
     add("speaker.html", 0.9)
+    add("portfolio.html", 0.9)
     add("programming-map.html", 0.9)
     add("archive.html", 0.6)
     # lectures
@@ -1134,6 +1410,7 @@ def main() -> int:
         (DIST / ".nojekyll").write_text("", encoding="utf-8")
         build_speaker_page()
         build_lectures()
+        build_portfolio_page()
         build_sitemap_and_robots()
         return 0
 
@@ -1160,12 +1437,14 @@ def main() -> int:
 
     speaker_built = build_speaker_page()
     lectures_built = build_lectures()
+    portfolio_built = build_portfolio_page()
     build_sitemap_and_robots()
 
     print(
         f"[+] site built: {DIST} ({len(dates)} archive pages"
         + (", speaker.html" if speaker_built else "")
         + (f", {lectures_built} lectures" if lectures_built else "")
+        + (", portfolio.html" if portfolio_built else "")
         + ", sitemap.xml, robots.txt)"
     )
     return 0

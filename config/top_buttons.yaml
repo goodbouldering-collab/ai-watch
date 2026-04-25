@@ -1,0 +1,49 @@
+# トップページのナビボタン
+# 管理画面 (/admin) から編集可能。
+# enabled: false で非表示、並び順はこのファイルの順序がそのまま反映される。
+# kind:
+#   link   … <a href="..."> を出力
+#   action … <button> を出力（action_id でフロントの挙動を決める）
+top_buttons:
+  - id: speaker
+    label: 講師紹介
+    icon: 🎤
+    href: ./speaker.html
+    kind: link
+    enabled: true
+
+  - id: portfolio
+    label: 実績
+    icon: 🏆
+    href: ./portfolio.html
+    kind: link
+    enabled: true
+
+  - id: lectures
+    label: 講習資料
+    icon: 📝
+    href: ./lectures/index.html
+    kind: link
+    enabled: true
+
+  - id: archive
+    label: 過去ログ
+    icon: 📚
+    href: ./archive.html
+    kind: link
+    enabled: true
+
+  - id: programming_map
+    label: プログラミングマップ
+    icon: 📘
+    href: ./programming-map.html
+    kind: link
+    enabled: true
+
+  - id: run
+    label: 巡回実行
+    icon: 🔄
+    href: ''
+    kind: action
+    action_id: run
+    enabled: true

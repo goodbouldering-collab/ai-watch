@@ -23,6 +23,8 @@ from pydantic import BaseModel
 
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG_FILE = ROOT / "config" / "support_sns.yaml"
+TOP_BUTTONS_FILE = ROOT / "config" / "top_buttons.yaml"
+SPEAKER_FILE = ROOT / "content" / "speaker.md"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 SITE_DIST = ROOT / "site" / "dist"
 
@@ -144,6 +146,116 @@ def admin_page() -> FileResponse:
 @app.get("/api/support-sns")
 def get_all() -> dict:
     return load_config()["support_sns"]
+
+
+# ---------- 講師紹介 (content/speaker.md) ----------
+
+class SpeakerPayload(BaseModel):
+    content: str
+
+
+@app.get("/api/speaker")
+def get_speaker() -> dict:
+    if not SPEAKER_FILE.exists():
+        return {"content": "", "path": str(SPEAKER_FILE.relative_to(ROOT))}
+    return {
+        "content": SPEAKER_FILE.read_text(encoding="utf-8"),
+        "path": str(SPEAKER_FILE.relative_to(ROOT)),
+    }
+
+
+@app.put("/api/speaker")
+def put_speaker(payload: SpeakerPayload) -> dict:
+    SPEAKER_FILE.parent.mkdir(parents=True, exist_ok=True)
+    SPEAKER_FILE.write_text(payload.content, encoding="utf-8")
+    return {"ok": True, "bytes": len(payload.content.encode("utf-8"))}
+
+
+# ---------- トップボタン (config/top_buttons.yaml) ----------
+
+DEFAULT_TOP_BUTTONS = [
+    {"id": "speaker",         "label": "講師紹介",           "icon": "🎤", "href": "./speaker.html",            "kind": "link",   "enabled": True},
+    {"id": "portfolio",       "label": "実績",               "icon": "🏆", "href": "./portfolio.html",          "kind": "link",   "enabled": True},
+    {"id": "lectures",        "label": "講習資料",           "icon": "📝", "href": "./lectures/index.html",     "kind": "link",   "enabled": True},
+    {"id": "archive",         "label": "過去ログ",           "icon": "📚", "href": "./archive.html",            "kind": "link",   "enabled": True},
+    {"id": "programming_map", "label": "プログラミングマップ", "icon": "📘", "href": "./programming-map.html",    "kind": "link",   "enabled": True},
+    {"id": "run",             "label": "巡回実行",           "icon": "🔄", "href": "",                          "kind": "action", "action_id": "run", "enabled": True},
+]
+
+
+class TopButton(BaseModel):
+    id: str = ""
+    label: str = ""
+    icon: str = ""
+    href: str = ""
+    kind: str = "link"       # "link" or "action"
+    action_id: str = ""
+    enabled: bool = True
+
+
+class TopButtonsPayload(BaseModel):
+    top_buttons: list[TopButton]
+
+
+def load_top_buttons() -> list[dict]:
+    if not TOP_BUTTONS_FILE.exists():
+        return [dict(b) for b in DEFAULT_TOP_BUTTONS]
+    try:
+        data = yaml.safe_load(TOP_BUTTONS_FILE.read_text(encoding="utf-8")) or {}
+        items = data.get("top_buttons") or []
+        if not items:
+            return [dict(b) for b in DEFAULT_TOP_BUTTONS]
+        return items
+    except Exception:
+        return [dict(b) for b in DEFAULT_TOP_BUTTONS]
+
+
+def save_top_buttons(items: list[dict]) -> None:
+    TOP_BUTTONS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    TOP_BUTTONS_FILE.write_text(
+        yaml.safe_dump({"top_buttons": items}, allow_unicode=True, sort_keys=False),
+        encoding="utf-8",
+    )
+
+
+@app.get("/api/top-buttons")
+def get_top_buttons() -> dict:
+    return {"top_buttons": load_top_buttons()}
+
+
+@app.put("/api/top-buttons")
+def put_top_buttons(payload: TopButtonsPayload) -> dict:
+    items = [b.model_dump() for b in payload.top_buttons]
+    for b in items:
+        if b.get("kind") not in ("link", "action"):
+            raise HTTPException(400, f"invalid kind: {b.get('kind')!r}")
+        if not b.get("id"):
+            raise HTTPException(400, "id is required")
+    save_top_buttons(items)
+    return {"ok": True, "count": len(items)}
+
+
+# ---------- サイト再ビルド ----------
+
+@app.post("/api/rebuild")
+def rebuild_site() -> dict:
+    try:
+        r = subprocess.run(
+            [sys.executable, "site/build_site.py"],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=180,
+        )
+        return {
+            "ok": r.returncode == 0,
+            "stdout": (r.stdout or "")[-3000:],
+            "stderr": (r.stderr or "")[-1500:],
+        }
+    except Exception as e:
+        return {"ok": False, "stderr": str(e)}
 
 
 @app.post("/api/support-sns/{platform}")

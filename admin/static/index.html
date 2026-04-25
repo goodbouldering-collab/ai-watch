@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>サポートSNS 管理</title>
+<title>AI-watch 管理</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -13,14 +13,16 @@
     line-height: 1.6;
     padding: 32px 20px 80px;
   }
-  .wrap { max-width: 900px; margin: 0 auto; }
+  .wrap { max-width: 960px; margin: 0 auto; }
   .topbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 8px;
   }
-  .back-btn {
+  .back-btn, .rebuild-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -32,14 +34,41 @@
     text-decoration: none;
     font-size: 0.82rem;
     font-weight: 600;
+    cursor: pointer;
     transition: all 0.15s;
   }
-  .back-btn:hover {
+  .back-btn:hover, .rebuild-btn:hover {
     background: #f1f5f9;
     border-color: #94a3b8;
   }
-  h1 { font-size: 1.6rem; margin-bottom: 6px; color: #0f172a; }
-  .sub { color: #64748b; font-size: 0.85rem; margin-bottom: 28px; }
+  .rebuild-btn { background: #ecfeff; border-color: #a5f3fc; color: #0e7490; }
+  .rebuild-btn:hover { background: #cffafe; }
+  h1 { font-size: 1.55rem; margin-bottom: 4px; color: #0f172a; }
+  .sub { color: #64748b; font-size: 0.85rem; margin-bottom: 20px; }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    background: transparent;
+    border: none;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+  .tab:hover { color: #0f172a; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
   .card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -71,7 +100,7 @@
     gap: 8px;
     margin-bottom: 8px;
   }
-  input {
+  input, textarea, select {
     background: #ffffff;
     border: 1.5px solid #cbd5e1;
     border-radius: 8px;
@@ -80,14 +109,22 @@
     font-size: 0.88rem;
     font-family: inherit;
     transition: border-color 0.15s, box-shadow 0.15s;
+    width: 100%;
   }
-  input::placeholder { color: #94a3b8; }
-  input:focus {
+  textarea {
+    min-height: 420px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    resize: vertical;
+  }
+  input::placeholder, textarea::placeholder { color: #94a3b8; }
+  input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: #2563eb;
     box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
   }
-  button {
+  button.primary, button.save {
     background: #2563eb;
     color: #ffffff;
     border: none;
@@ -98,15 +135,28 @@
     font-size: 0.85rem;
     transition: background 0.15s;
   }
-  button:hover { background: #1d4ed8; }
+  button.primary:hover, button.save:hover { background: #1d4ed8; }
   button.del {
     background: #fef2f2;
     color: #dc2626;
     padding: 5px 12px;
     border: 1px solid #fecaca;
+    border-radius: 8px;
     font-size: 0.75rem;
+    cursor: pointer;
   }
   button.del:hover { background: #fee2e2; }
+  button.ghost {
+    background: #f8fafc;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+  button.ghost:hover { background: #f1f5f9; }
+
   .list { margin-top: 10px; }
   .item {
     display: grid;
@@ -123,19 +173,159 @@
   .item a { color: #2563eb; text-decoration: none; word-break: break-all; }
   .item a:hover { text-decoration: underline; }
   .empty { color: #94a3b8; font-size: 0.8rem; padding: 8px 0; }
+
+  .btn-row {
+    display: grid;
+    grid-template-columns: 44px 90px 1.1fr 1fr 100px 70px 90px;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.82rem;
+  }
+  .btn-row:first-of-type { border-top: none; }
+  .btn-row .handle {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .btn-row .handle button {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 2px 6px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    line-height: 1;
+  }
+  .btn-row input, .btn-row select { padding: 7px 9px; font-size: 0.82rem; }
+  .btn-row .chk { display: flex; align-items: center; gap: 4px; font-size: 0.78rem; }
+  .btn-row .chk input { width: auto; }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #0f172a;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.2s;
+    pointer-events: none;
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .helper { font-size: 0.75rem; color: #64748b; margin-top: 6px; }
+  .actions-bar {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="topbar">
     <a href="/site/" class="back-btn">← メインページに戻る</a>
+    <button class="rebuild-btn" id="rebuild-btn">🔨 サイト再ビルド</button>
   </div>
-  <h1>サポートSNS 管理画面</h1>
-  <p class="sub">運用対象のSNSアカウントを登録・削除できる。保存先: <code>config/support_sns.yaml</code></p>
-  <div id="app"></div>
+  <h1>AI-watch 管理画面</h1>
+  <p class="sub">サポートSNS / 講師紹介 / トップボタンをブラウザから編集できる</p>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="sns">🔗 サポートSNS</button>
+    <button class="tab" data-tab="speaker">🎤 講師紹介</button>
+    <button class="tab" data-tab="buttons">🧭 トップボタン</button>
+  </div>
+
+  <section class="panel active" data-panel="sns">
+    <div id="sns-app"></div>
+  </section>
+
+  <section class="panel" data-panel="speaker">
+    <div class="card">
+      <h2>🎤 講師紹介 <span class="badge" id="speaker-path">content/speaker.md</span></h2>
+      <p class="helper">Markdown として保存。保存後は「サイト再ビルド」を押すと <code>/speaker.html</code> に反映。</p>
+      <textarea id="speaker-text" placeholder="読み込み中..."></textarea>
+      <div class="actions-bar">
+        <button class="save" id="speaker-save">💾 保存</button>
+        <button class="ghost" id="speaker-reload">↻ 再読込</button>
+        <button class="ghost" id="speaker-save-rebuild">💾 保存して再ビルド</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" data-panel="buttons">
+    <div class="card">
+      <h2>🧭 トップページ ナビボタン</h2>
+      <p class="helper">並び順・ラベル・リンク・表示/非表示を編集。保存後「サイト再ビルド」で反映。</p>
+      <div class="btn-row" style="font-weight:700; color:#64748b; border-top:none; padding-bottom:4px;">
+        <div>並び</div><div>アイコン</div><div>ラベル</div><div>URL / action</div><div>種別</div><div>表示</div><div>操作</div>
+      </div>
+      <div id="btn-list"></div>
+      <div class="actions-bar">
+        <button class="ghost" id="btn-add">＋ 行を追加</button>
+        <button class="save" id="btn-save">💾 保存</button>
+        <button class="ghost" id="btn-reload">↻ 再読込</button>
+        <button class="ghost" id="btn-save-rebuild">💾 保存して再ビルド</button>
+      </div>
+    </div>
+  </section>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
+/* ---------------- utils ---------------- */
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+function escapeAttr(s) { return escapeHtml(s); }
+
+const toastEl = document.getElementById("toast");
+let toastT;
+function toast(msg, ms = 1800) {
+  toastEl.textContent = msg;
+  toastEl.classList.add("show");
+  clearTimeout(toastT);
+  toastT = setTimeout(() => toastEl.classList.remove("show"), ms);
+}
+
+/* ---------------- tabs ---------------- */
+document.querySelectorAll(".tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+    tab.classList.add("active");
+    document.querySelector(`.panel[data-panel="${tab.dataset.tab}"]`).classList.add("active");
+  });
+});
+
+/* ---------------- rebuild ---------------- */
+document.getElementById("rebuild-btn").addEventListener("click", async () => {
+  const btn = document.getElementById("rebuild-btn");
+  btn.disabled = true;
+  btn.textContent = "🔨 ビルド中...";
+  try {
+    const r = await fetch("/api/rebuild", { method: "POST" });
+    const j = await r.json();
+    toast(j.ok ? "再ビルド完了" : "再ビルド失敗: " + (j.stderr || "").slice(0, 200), 3000);
+  } catch (e) {
+    toast("再ビルド失敗: " + e.message, 3000);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "🔨 サイト再ビルド";
+  }
+});
+
+/* ---------------- SNS ---------------- */
 const PLATFORMS = [
   { key: "youtube",          label: "YouTube",          icon: "🎥" },
   { key: "x",                label: "X (Twitter)",      icon: "🐦" },
@@ -146,12 +336,11 @@ const PLATFORMS = [
   { key: "facebook",         label: "Facebook",         icon: "📘" },
 ];
 
-async function fetchAll() {
+async function snsFetchAll() {
   const r = await fetch("/api/support-sns");
   return await r.json();
 }
-
-async function addAccount(platform, input) {
+async function snsAdd(platform, input) {
   const r = await fetch(`/api/support-sns/${platform}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -159,14 +348,13 @@ async function addAccount(platform, input) {
   });
   if (!r.ok) alert("追加に失敗: " + (await r.text()));
 }
-
-async function deleteAccount(platform, index) {
+async function snsDelete(platform, index) {
   const r = await fetch(`/api/support-sns/${platform}/${index}`, { method: "DELETE" });
   if (!r.ok) alert("削除に失敗: " + (await r.text()));
 }
 
-function render(data) {
-  const app = document.getElementById("app");
+function snsRender(data) {
+  const app = document.getElementById("sns-app");
   app.innerHTML = "";
   for (const { key, label, icon } of PLATFORMS) {
     const items = data[key] || [];
@@ -176,7 +364,7 @@ function render(data) {
       <h2>${icon} ${label} <span class="badge">${items.length}</span></h2>
       <div class="row">
         <input placeholder="アカウント名 または URL を貼り付け（例: @openai）" data-input>
-        <button data-add="${key}">追加</button>
+        <button class="primary" data-add="${key}">追加</button>
       </div>
       <div class="list">
         ${items.length === 0 ? '<div class="empty">まだ登録がありません</div>' :
@@ -192,14 +380,13 @@ function render(data) {
     `;
     app.appendChild(card);
   }
-
   app.querySelectorAll("[data-add]").forEach((btn) => {
     const doAdd = async () => {
       const input = btn.parentElement.querySelector("[data-input]");
       const val = input.value.trim();
       if (!val) { alert("アカウント名またはURLを入力してください"); return; }
-      await addAccount(btn.dataset.add, val);
-      reload();
+      await snsAdd(btn.dataset.add, val);
+      snsReload();
     };
     btn.addEventListener("click", doAdd);
     btn.parentElement.querySelector("[data-input]").addEventListener("keydown", (e) => {
@@ -209,25 +396,131 @@ function render(data) {
   app.querySelectorAll("[data-del]").forEach((btn) => {
     btn.addEventListener("click", async () => {
       if (!confirm("削除しますか？")) return;
-      await deleteAccount(btn.dataset.del, Number(btn.dataset.i));
-      reload();
+      await snsDelete(btn.dataset.del, Number(btn.dataset.i));
+      snsReload();
     });
   });
 }
+async function snsReload() { snsRender(await snsFetchAll()); }
+snsReload();
 
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[c]));
+/* ---------------- Speaker ---------------- */
+const speakerText = document.getElementById("speaker-text");
+const speakerPath = document.getElementById("speaker-path");
+
+async function speakerLoad() {
+  const r = await fetch("/api/speaker");
+  const j = await r.json();
+  speakerText.value = j.content || "";
+  if (j.path) speakerPath.textContent = j.path;
 }
-function escapeAttr(s) { return escapeHtml(s); }
-
-async function reload() {
-  const data = await fetchAll();
-  render(data);
+async function speakerSave() {
+  const r = await fetch("/api/speaker", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content: speakerText.value }),
+  });
+  if (!r.ok) { toast("保存失敗: " + (await r.text())); return false; }
+  toast("保存しました");
+  return true;
 }
+document.getElementById("speaker-save").addEventListener("click", speakerSave);
+document.getElementById("speaker-reload").addEventListener("click", speakerLoad);
+document.getElementById("speaker-save-rebuild").addEventListener("click", async () => {
+  if (await speakerSave()) document.getElementById("rebuild-btn").click();
+});
+speakerLoad();
 
-reload();
+/* ---------------- Top buttons ---------------- */
+let BUTTONS = [];
+
+async function btnsLoad() {
+  const r = await fetch("/api/top-buttons");
+  const j = await r.json();
+  BUTTONS = j.top_buttons || [];
+  btnsRender();
+}
+function btnsRender() {
+  const list = document.getElementById("btn-list");
+  list.innerHTML = "";
+  BUTTONS.forEach((b, i) => {
+    const row = document.createElement("div");
+    row.className = "btn-row";
+    row.innerHTML = `
+      <div class="handle">
+        <button data-mv="up" data-i="${i}" title="上へ">▲</button>
+        <button data-mv="down" data-i="${i}" title="下へ">▼</button>
+      </div>
+      <input data-k="icon" data-i="${i}" value="${escapeAttr(b.icon || "")}" placeholder="🎤">
+      <input data-k="label" data-i="${i}" value="${escapeAttr(b.label || "")}" placeholder="講師紹介">
+      <input data-k="href" data-i="${i}" value="${escapeAttr(b.href || (b.kind==='action' ? (b.action_id || '') : ''))}" placeholder="./speaker.html">
+      <select data-k="kind" data-i="${i}">
+        <option value="link" ${b.kind !== 'action' ? 'selected' : ''}>リンク</option>
+        <option value="action" ${b.kind === 'action' ? 'selected' : ''}>アクション</option>
+      </select>
+      <label class="chk"><input type="checkbox" data-k="enabled" data-i="${i}" ${b.enabled ? 'checked' : ''}>表示</label>
+      <button class="del" data-del="${i}">削除</button>
+    `;
+    list.appendChild(row);
+  });
+
+  list.querySelectorAll("input[data-k], select[data-k]").forEach((el) => {
+    el.addEventListener("input", (e) => {
+      const i = Number(el.dataset.i);
+      const k = el.dataset.k;
+      if (k === "enabled") BUTTONS[i][k] = el.checked;
+      else BUTTONS[i][k] = el.value;
+    });
+  });
+  list.querySelectorAll("[data-mv]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const i = Number(btn.dataset.i);
+      const j = btn.dataset.mv === "up" ? i - 1 : i + 1;
+      if (j < 0 || j >= BUTTONS.length) return;
+      [BUTTONS[i], BUTTONS[j]] = [BUTTONS[j], BUTTONS[i]];
+      btnsRender();
+    });
+  });
+  list.querySelectorAll("[data-del]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!confirm("この行を削除しますか？")) return;
+      BUTTONS.splice(Number(btn.dataset.del), 1);
+      btnsRender();
+    });
+  });
+}
+document.getElementById("btn-add").addEventListener("click", () => {
+  const id = "custom_" + Date.now().toString(36);
+  BUTTONS.push({ id, label: "新しいボタン", icon: "✨", href: "https://", kind: "link", action_id: "", enabled: true });
+  btnsRender();
+});
+async function btnsSave() {
+  const payload = BUTTONS.map((b) => ({
+    id: b.id || ("btn_" + Math.random().toString(36).slice(2, 8)),
+    label: b.label || "",
+    icon: b.icon || "",
+    href: b.kind === "action" ? "" : (b.href || ""),
+    kind: b.kind || "link",
+    action_id: b.kind === "action" ? (b.href || b.action_id || "run") : "",
+    enabled: !!b.enabled,
+  }));
+  const r = await fetch("/api/top-buttons", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ top_buttons: payload }),
+  });
+  if (!r.ok) { toast("保存失敗: " + (await r.text())); return false; }
+  toast("保存しました");
+  BUTTONS = payload;
+  btnsRender();
+  return true;
+}
+document.getElementById("btn-save").addEventListener("click", btnsSave);
+document.getElementById("btn-reload").addEventListener("click", btnsLoad);
+document.getElementById("btn-save-rebuild").addEventListener("click", async () => {
+  if (await btnsSave()) document.getElementById("rebuild-btn").click();
+});
+btnsLoad();
 </script>
 </body>
 </html>

@@ -1,0 +1,119 @@
+# AI-watch — 実績サイト (Portfolio)
+# このワークスペース(Claude/配下)で作ったサイトを掲載。
+#
+# 追加ルール:
+#   - url は「現在の公開ドメイン」。将来ドメインが変わったらここだけ書き換える
+#   - 旧ドメインは aliases に残しておくと、過去記事からの参照が切れない
+#   - status: live / dev / retired でフィルタ(retired は一覧に出さない)
+#   - tech はチップ表示(Next.js / Vite / Nuxt / Angular / Payload など)
+#   - summary は 1〜2 行で「何屋 / 何ができる」
+#   - thumbnail は null 可(ビルド時に取得できれば og:image を使う)
+#
+portfolio:
+  - name: みんなのWA
+    slug: minanowa
+    url: https://minanowa.com
+    aliases:
+      - https://3000-i26mzzri6plazftdqznnd-b32ec7bb.sandbox.novita.ai/
+    status: live
+    category: コミュニティ
+    tech: [Express, JSON Store]
+    summary: 彦根市の異業種交流会。登録・イベント・紹介のプラットフォーム
+    since: 2025-03
+
+  - name: グッぼる 本店
+    slug: goodbouldering
+    url: https://goodbouldering.com
+    status: live
+    category: 店舗EC
+    tech: [カラーミーショップ, EUC-JP]
+    summary: ボルダリングカフェの本店サイト(商品・ブログ・予約)
+    since: 2014-01
+
+  - name: Notエステ
+    slug: notesthe
+    url: https://notesthe.com
+    status: live
+    category: 店舗LP
+    tech: [Next.js, Payload CMS]
+    summary: 美肌脱毛・ホワイトニング(彦根・長浜)
+    since: 2025-05
+
+  - name: プロギングジャパン
+    slug: plogging-japan
+    url: https://plogging.jp
+    status: live
+    category: NPO
+    tech: [Angular]
+    summary: ゴミ拾いランニング(Plogging)の日本公式
+    since: 2020-04
+
+  - name: モクシャチャイ
+    slug: moksha-chai
+    url: https://mokshajapan.jp
+    status: live
+    category: 商品LP
+    tech: [Nuxt]
+    summary: インド伝統の煮出しチャイをそのまま日本へ
+    since: 2023-07
+
+  - name: N-デザイン
+    slug: n-design
+    url: https://neri-design.co.jp
+    status: live
+    category: 企業サイト
+    tech: [Vite, React]
+    summary: ネリデザイン(株)の Webマーケティング事業サイト
+    since: 2019-04
+
+  - name: ClimbHero
+    slug: climbhero
+    url: https://project-02ceb497.pages.dev
+    status: live
+    category: 動画アプリ
+    tech: [Cloudflare Pages]
+    summary: 登る動画をランキングで競うクライミング特化アプリ
+    since: 2025-02
+
+  - name: 協同組合ビジネス21
+    slug: business21
+    url: https://business21.jp
+    status: live
+    category: 協同組合
+    tech: [Next.js]
+    summary: 滋賀の中小企業向け組合のコミュニティ・広報サイト
+    since: 2024-11
+
+  - name: カラッと＋
+    slug: karatto-plus
+    url: https://ajlmshqi.gensparkspace.com
+    status: live
+    category: プロジェクトLP
+    tech: [Genspark]
+    summary: カラッとヒーロー1億達成プロジェクトの拠点
+    since: 2025-01
+
+  # ---- 生成・試作系 ----
+  - name: 今心
+    slug: imagokoro
+    url: https://readdy.link/share/042372463c05d7076e5a1b8d3ee28e0e
+    status: dev
+    category: 生成LP
+    tech: [Readdy]
+    summary: 心地いいスナックの雰囲気LP
+
+  - name: GPsole
+    slug: gpsole
+    url: https://readdy.link/share/473607684647d6e150399fa3e68b7fd9
+    status: dev
+    category: 生成LP
+    tech: [Readdy]
+    summary: 新世代リソールの製品サイト
+
+  - name: まずは0から1億マーケティング
+    slug: zero-to-oku
+    url: https://khktfxqf.gensparkspace.com
+    status: dev
+    category: 生成LP
+    tech: [Genspark]
+    summary: マーケ基礎 → 1億到達までの考え方を1枚で
