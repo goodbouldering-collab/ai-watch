@@ -18,7 +18,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://static.simonwillison.net/static/2026/why-are-you-like-this.jpeg",
-      "published": "2026-04-25T16:44:01+00:00"
+      "published": "2026-04-25T16:44:01+00:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "d6a05d405ca56430",
@@ -37,7 +39,9 @@
         "freshness": 6.0
       },
       "thumbnail": "",
-      "published": "2026-04-25T12:06:55+00:00"
+      "published": "2026-04-25T12:06:55+00:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "365ec411a33a50e6",
@@ -56,7 +60,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://img.youtube.com/vi/6DCrZkkEDMo/hqdefault.jpg",
-      "published": "2026-04-25T12:10:59+00:00"
+      "published": "2026-04-25T12:10:59+00:00",
+      "_is_video": true,
+      "_summary_clean": ""
     },
     {
       "hash": "f53d45d46c87daef",
@@ -75,7 +81,9 @@
         "freshness": 3.0
       },
       "thumbnail": "",
-      "published": "2026-04-25T04:13:36+00:00"
+      "published": "2026-04-25T04:13:36+00:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "abdc59b7cc7eceb6",
@@ -94,7 +102,9 @@
         "freshness": 3.0
       },
       "thumbnail": "",
-      "published": "2026-04-24T23:35:07+00:00"
+      "published": "2026-04-24T23:35:07+00:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "5508c87b7302345a",
@@ -113,7 +123,9 @@
         "freshness": 3.0
       },
       "thumbnail": "",
-      "published": "2026-04-24T22:38:49+00:00"
+      "published": "2026-04-24T22:38:49+00:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "09a8c7cd03d51bbd",
@@ -132,7 +144,9 @@
         "freshness": 3.0
       },
       "thumbnail": "https://img.youtube.com/vi/w8TRpmOEpMk/hqdefault.jpg",
-      "published": "2026-04-25T10:01:24+00:00"
+      "published": "2026-04-25T10:01:24+00:00",
+      "_is_video": true,
+      "_summary_clean": ""
     },
     {
       "hash": "ccd11585c3b1158c",
@@ -151,7 +165,9 @@
         "freshness": 3.0
       },
       "thumbnail": "https://img.youtube.com/vi/JqtC3UJou78/hqdefault.jpg",
-      "published": "2026-04-25T04:00:17+00:00"
+      "published": "2026-04-25T04:00:17+00:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "86201bbd7b9c3ac5",
@@ -170,7 +186,9 @@
         "freshness": 3.0
       },
       "thumbnail": "https://img.youtube.com/vi/mKOLbleaHJU/hqdefault.jpg",
-      "published": "2026-04-25T09:02:01+00:00"
+      "published": "2026-04-25T09:02:01+00:00",
+      "_is_video": true,
+      "_summary_clean": ""
     },
     {
       "hash": "4c4eef14fa975ddd",
@@ -189,7 +207,9 @@
         "freshness": 0.0
       },
       "thumbnail": "https://image.itmedia.co.jp/aiplus/articles/2604/26/cover_news023.jpg",
-      "published": "Sun, 26 Apr 2026 07:04:00 +0900"
+      "published": "Sun, 26 Apr 2026 07:04:00 +0900",
+      "_is_video": false,
+      "_summary_clean": ""
     }
   ]
 }
