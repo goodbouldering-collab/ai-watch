@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Literal
 
 import yaml
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -26,8 +26,12 @@ CONFIG_FILE = ROOT / "config" / "support_sns.yaml"
 TOP_BUTTONS_FILE = ROOT / "config" / "top_buttons.yaml"
 SPEAKER_FILE = ROOT / "content" / "speaker.md"
 LECTURES_DIR = ROOT / "content" / "lectures"
+ASSETS_DIR = ROOT / "content" / "assets"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 SITE_DIST = ROOT / "site" / "dist"
+
+ASSET_EXT_OK = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".pdf"}
+ASSET_MAX_BYTES = 10 * 1024 * 1024  # 10 MiB
 
 Platform = Literal[
     "youtube",
@@ -472,6 +476,80 @@ def delete_lecture(slug: str) -> dict:
         raise HTTPException(404, f"lecture not found: {s}")
     f.unlink()
     return {"ok": True, "slug": s}
+
+
+# ---------- Markdown プレビュー ----------
+
+class PreviewPayload(BaseModel):
+    body: str
+
+
+@app.post("/api/lectures/preview")
+def preview_markdown(payload: PreviewPayload) -> dict:
+    import markdown as md_mod
+    md = md_mod.Markdown(extensions=["extra", "sane_lists"])
+    html = md.convert(payload.body or "")
+    return {"html": html}
+
+
+# ---------- アセットアップロード (content/assets/) ----------
+
+@app.get("/api/assets")
+def list_assets() -> dict:
+    ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+    items = []
+    for f in sorted(ASSETS_DIR.glob("*")):
+        if not f.is_file():
+            continue
+        items.append({
+            "name": f.name,
+            "size": f.stat().st_size,
+            "url": f"./assets/{f.name}",   # 公開サイトからの相対パス
+        })
+    return {"assets": items, "count": len(items)}
+
+
+@app.post("/api/assets")
+async def upload_asset(file: UploadFile = File(...)) -> dict:
+    name = (file.filename or "").strip()
+    if not name:
+        raise HTTPException(400, "ファイル名が空です")
+    # サニタイズ: パス分離・隠しファイル禁止
+    name = Path(name).name
+    if name.startswith("."):
+        raise HTTPException(400, "隠しファイルは不可です")
+    ext = Path(name).suffix.lower()
+    if ext not in ASSET_EXT_OK:
+        raise HTTPException(400, f"許可されない拡張子: {ext or '(なし)'}")
+
+    ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+    dest = ASSETS_DIR / name
+    # 重複時は連番つけて回避
+    if dest.exists():
+        stem, suf = dest.stem, dest.suffix
+        for i in range(2, 1000):
+            cand = ASSETS_DIR / f"{stem}-{i}{suf}"
+            if not cand.exists():
+                dest = cand
+                break
+
+    data = await file.read()
+    if len(data) > ASSET_MAX_BYTES:
+        raise HTTPException(413, f"ファイルが大きすぎます ({len(data)} > {ASSET_MAX_BYTES})")
+    dest.write_bytes(data)
+    return {"ok": True, "name": dest.name, "size": len(data), "url": f"./assets/{dest.name}"}
+
+
+@app.delete("/api/assets/{name}")
+def delete_asset(name: str) -> dict:
+    safe = Path(name).name
+    if safe.startswith(".") or "/" in name or "\\" in name:
+        raise HTTPException(400, "不正なファイル名")
+    f = ASSETS_DIR / safe
+    if not f.exists() or not f.is_file():
+        raise HTTPException(404, f"asset not found: {safe}")
+    f.unlink()
+    return {"ok": True, "name": safe}
 
 
 # ---------- Shopify Admin ----------

@@ -295,11 +295,27 @@
             <textarea id="lec-summary" rows="2" style="padding:6px 10px;" placeholder="一覧やOGPに使う要約 (1〜2文)"></textarea>
           </div>
           <label style="font-weight:700;">本文 (Markdown)</label>
-          <textarea id="lec-body" rows="22" style="width:100%; padding:8px; font-family:Consolas,monospace; font-size:13px; margin-top:6px;"
-            placeholder="## セクション&#10;&#10;本文..."></textarea>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px;">
+            <textarea id="lec-body" rows="22" style="width:100%; padding:8px; font-family:Consolas,monospace; font-size:13px;"
+              placeholder="## セクション&#10;&#10;本文..."></textarea>
+            <div id="lec-preview" style="border:1px solid #e2e8f0; border-radius:6px; padding:12px; max-height:520px; overflow-y:auto; font-size:14px; background:#fafbfc;">
+              <em style="color:#94a3b8;">プレビューはここに表示されます</em>
+            </div>
+          </div>
+
+          <div style="margin-top:12px; padding:10px; border:1px dashed #cbd5e1; border-radius:6px; background:#f8fafc;">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <strong style="font-size:13px;">📎 画像/PDFを挿入:</strong>
+              <input type="file" id="lec-asset-file" accept=".png,.jpg,.jpeg,.gif,.webp,.svg,.pdf" style="font-size:13px;">
+              <button class="ghost" id="lec-asset-upload" style="padding:4px 12px;">アップロード→本文に挿入</button>
+              <span id="lec-asset-hint" class="helper" style="font-size:12px; margin:0;">最大10MB</span>
+            </div>
+          </div>
+
           <div class="actions-bar">
             <button class="save" id="lec-save">💾 保存</button>
             <button class="ghost" id="lec-save-rebuild">💾 保存して再ビルド</button>
+            <button class="ghost" id="lec-duplicate">📋 複製して新規</button>
             <button class="ghost" id="lec-cancel">キャンセル</button>
             <button class="ghost" id="lec-delete" style="margin-left:auto; color:#b91c1c;">🗑 削除</button>
           </div>
@@ -677,6 +693,7 @@ async function lecOpen(slug) {
   document.querySelectorAll(".lec-item").forEach((el) => {
     el.style.background = el.dataset.slug === slug ? "#eff6ff" : "";
   });
+  lecRenderPreview();
 }
 
 function lecNew() {
@@ -694,6 +711,7 @@ function lecNew() {
   lecShowEditor(true);
   document.querySelectorAll(".lec-item").forEach((el) => { el.style.background = ""; });
   document.getElementById("lec-slug").focus();
+  lecRenderPreview();
 }
 
 function lecPayload() {
@@ -741,18 +759,76 @@ async function lecDelete() {
   await lecLoadList();
 }
 
+function lecDuplicate() {
+  // 現在の編集内容をベースに、slug を空にして新規モードに切り替え
+  const cur = lecPayload();
+  LEC_CURRENT = null;
+  document.getElementById("lec-slug").value = "";
+  document.getElementById("lec-slug").disabled = false;
+  document.getElementById("lec-title").value = (cur.title || "") + " (コピー)";
+  // body / date / role / gen_by / summary はそのまま流用
+  document.getElementById("lec-delete").hidden = true;
+  document.querySelectorAll(".lec-item").forEach((el) => { el.style.background = ""; });
+  document.getElementById("lec-slug").focus();
+  toast("複製モード: slug を入力して保存");
+}
+
+/* プレビュー (デバウンス) */
+let LEC_PREVIEW_TIMER = null;
+function lecSchedulePreview() {
+  if (LEC_PREVIEW_TIMER) clearTimeout(LEC_PREVIEW_TIMER);
+  LEC_PREVIEW_TIMER = setTimeout(lecRenderPreview, 400);
+}
+async function lecRenderPreview() {
+  const body = document.getElementById("lec-body").value;
+  const r = await fetch("/api/lectures/preview", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ body }),
+  });
+  if (!r.ok) return;
+  const d = await r.json();
+  document.getElementById("lec-preview").innerHTML = d.html || "<em style='color:#94a3b8;'>(空)</em>";
+}
+
+/* アセットアップロード */
+async function lecAssetUpload() {
+  const inp = document.getElementById("lec-asset-file");
+  if (!inp.files || !inp.files[0]) { toast("ファイルを選択してください"); return; }
+  const fd = new FormData();
+  fd.append("file", inp.files[0]);
+  const r = await fetch("/api/assets", { method: "POST", body: fd });
+  if (!r.ok) { toast("アップロード失敗: " + (await r.text())); return; }
+  const d = await r.json();
+  // カーソル位置に Markdown 挿入
+  const ext = (d.name.split(".").pop() || "").toLowerCase();
+  const isImage = ["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(ext);
+  const snippet = isImage ? `![${d.name}](${d.url})` : `[${d.name}](${d.url})`;
+  const ta = document.getElementById("lec-body");
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  ta.value = ta.value.slice(0, start) + snippet + ta.value.slice(end);
+  ta.selectionStart = ta.selectionEnd = start + snippet.length;
+  ta.focus();
+  inp.value = "";
+  lecSchedulePreview();
+  toast(`アップロード完了: ${d.name}`);
+}
+
 document.getElementById("lec-new").addEventListener("click", lecNew);
 document.getElementById("lec-reload").addEventListener("click", lecLoadList);
 document.getElementById("lec-save").addEventListener("click", lecSave);
 document.getElementById("lec-save-rebuild").addEventListener("click", async () => {
   if (await lecSave()) document.getElementById("rebuild-btn").click();
 });
+document.getElementById("lec-duplicate").addEventListener("click", lecDuplicate);
 document.getElementById("lec-cancel").addEventListener("click", () => {
   LEC_CURRENT = null;
   lecShowEditor(false);
   document.querySelectorAll(".lec-item").forEach((el) => { el.style.background = ""; });
 });
 document.getElementById("lec-delete").addEventListener("click", lecDelete);
+document.getElementById("lec-body").addEventListener("input", lecSchedulePreview);
+document.getElementById("lec-asset-upload").addEventListener("click", lecAssetUpload);
 lecLoadList();
 
 /* ---------------- Shopify ---------------- */
