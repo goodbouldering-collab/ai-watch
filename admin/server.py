@@ -190,6 +190,7 @@ DEFAULT_TOP_BUTTONS = [
     {"id": "archive",         "label": "過去ログ",           "icon": "📚", "href": "./archive.html",            "kind": "link",   "enabled": True},
     {"id": "programming_map", "label": "プログラミングマップ", "icon": "📘", "href": "./programming-map.html",    "kind": "link",   "enabled": True},
     {"id": "run",             "label": "巡回実行",           "icon": "🔄", "href": "",                          "kind": "action", "action_id": "run", "enabled": True},
+    {"id": "admin",           "label": "管理",               "icon": "⚙️", "href": "/admin",                    "kind": "link",   "enabled": True, "localhost_only": True},
 ]
 
 
@@ -201,6 +202,7 @@ class TopButton(BaseModel):
     kind: str = "link"       # "link" or "action"
     action_id: str = ""
     enabled: bool = True
+    localhost_only: bool = False  # True なら public (非localhost) で非表示
 
 
 class TopButtonsPayload(BaseModel):

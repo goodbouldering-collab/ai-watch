@@ -105,7 +105,8 @@ def render_top_nav(include_run: bool = True) -> str:
             href = html.escape(str(b.get("href", "")), quote=True)
             if not href:
                 continue
-            parts.append(f"<a href='{href}'>{text}</a> ")
+            extra = " data-localhost-only='1' style='display:none'" if b.get("localhost_only") else ""
+            parts.append(f"<a href='{href}'{extra}>{text}</a> ")
     if has_run:
         parts.append("<span id='run-status' class='run-status'></span>")
     parts.append("</nav>")
@@ -211,34 +212,23 @@ def is_video(item: dict) -> bool:
     return "youtube.com/watch" in url or "youtu.be/" in url
 
 
-# localhost / 127.0.0.1 でアクセスしたときだけ右上に ⚙️ ボタンを表示する。
-# 本番 (GitHub Pages 等) ではスクリプトが何もせず、訪問者には完全に不可視。
+# top_buttons の中で `localhost_only: true` のリンクは
+# サーバ生成HTMLでは display:none で出力 → 本スクリプトが localhost 系ホストのときだけ
+# display を inline に戻す。本番 (GitHub Pages) では訪問者に一切見えない。
 ADMIN_BUTTON_HTML = """
-<style>
-  #aihub-admin-fab {
-    position: fixed; top: 14px; right: 14px; z-index: 9999;
-    display: none;
-    width: 40px; height: 40px; border-radius: 50%;
-    background: rgba(15, 23, 42, 0.85); color: #f8fafc;
-    border: 1px solid rgba(248, 250, 252, 0.25);
-    font-size: 18px; cursor: pointer; line-height: 1;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    transition: transform 0.15s ease, background 0.15s ease;
-  }
-  #aihub-admin-fab:hover { transform: scale(1.08); background: rgba(37, 99, 235, 0.95); }
-</style>
-<button id="aihub-admin-fab" type="button" title="管理画面 (/admin)" aria-label="管理画面を開く">⚙️</button>
 <script>
 (function(){
-  var h = location.hostname;
-  if (h === "localhost" || h === "127.0.0.1" || h === "0.0.0.0" || h.endsWith(".localhost")) {
-    var btn = document.getElementById("aihub-admin-fab");
-    if (btn) {
-      btn.style.display = "block";
-      btn.addEventListener("click", function(){
-        window.location.href = "/admin";
-      });
-    }
+  function reveal(){
+    var h = location.hostname;
+    if (h !== "localhost" && h !== "127.0.0.1" && h !== "0.0.0.0" && !h.endsWith(".localhost")) return;
+    document.querySelectorAll("[data-localhost-only]").forEach(function(el){
+      el.style.display = "";
+    });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", reveal);
+  } else {
+    reveal();
   }
 })();
 </script>
@@ -752,7 +742,7 @@ def render_archive(dates: list[str]) -> str:
     parts.append("<header>")
     parts.append("<h1>過去ログ</h1>")
     parts.append(f"<p class='sub'>アーカイブ {len(dates)}件</p>")
-    parts.append("<nav><a href='./index.html'>📰 最新に戻る</a> <a href='./speaker.html'>🎤 講師紹介</a> <a href='./portfolio.html'>🏆 実績</a> <a href='./lectures/index.html'>📝 講習資料</a> <a href='./programming-map.html'>📘 プログラミングマップ</a></nav>")
+    parts.append("<nav><a href='./index.html'>📰 最新に戻る</a> <a href='./speaker.html'>🎤 講師紹介</a> <a href='./portfolio.html'>🏆 実績</a> <a href='./lectures/index.html'>📝 講習資料</a> <a href='./programming-map.html'>📘 プログラミングマップ</a> <a href='/admin' data-localhost-only='1' style='display:none'>⚙️ 管理</a></nav>")
     parts.append("</header>")
     if dates:
         parts.append("<ul style='list-style:none;padding:0;margin:0'>")
@@ -1163,7 +1153,8 @@ def build_speaker_page() -> bool:
         "<a href='./portfolio.html'>🏆 実績</a> "
         "<a href='./lectures/index.html'>📝 講習資料</a> "
         "<a href='./programming-map.html'>📘 プログラミングマップ</a> "
-        "<a href='./archive.html'>📚 過去ログ</a>"
+        "<a href='./archive.html'>📚 過去ログ</a> "
+        "<a href='/admin' data-localhost-only='1' style='display:none'>⚙️ 管理</a>"
         "</nav>"
     )
     html_text = render_content_page(title, meta, body_html, nav, page_path="speaker.html", kind="speaker")
@@ -1189,7 +1180,8 @@ def build_lectures() -> int:
             "<a href='../index.html'>🏠 トップ</a> "
             "<a href='../speaker.html'>🎤 講師紹介</a> "
             "<a href='../portfolio.html'>🏆 実績</a> "
-            "<a href='./index.html'>📝 資料一覧</a>"
+            "<a href='./index.html'>📝 資料一覧</a> "
+            "<a href='/admin' data-localhost-only='1' style='display:none'>⚙️ 管理</a>"
             "</nav>"
         )
         (out_dir / f"{f.stem}.html").write_text(
@@ -1208,7 +1200,8 @@ def build_lectures() -> int:
             "<nav>"
             "<a href='../index.html'>🏠 トップ</a> "
             "<a href='../speaker.html'>🎤 講師紹介</a> "
-            "<a href='../portfolio.html'>🏆 実績</a>"
+            "<a href='../portfolio.html'>🏆 実績</a> "
+            "<a href='/admin' data-localhost-only='1' style='display:none'>⚙️ 管理</a>"
             "</nav>"
         )
         (out_dir / "index.html").write_text(
@@ -1351,7 +1344,8 @@ def build_portfolio_page() -> bool:
         "<a href='./index.html'>🏠 トップ</a> "
         "<a href='./speaker.html'>🎤 講師紹介</a> "
         "<a href='./lectures/index.html'>📝 講習資料</a> "
-        "<a href='./programming-map.html'>📘 プログラミングマップ</a>"
+        "<a href='./programming-map.html'>📘 プログラミングマップ</a> "
+        "<a href='/admin' data-localhost-only='1' style='display:none'>⚙️ 管理</a>"
         "</nav>"
     )
     html_text = render_content_page("実績サイト", meta, body_html, nav, page_path="portfolio.html", kind="portfolio")
