@@ -29,7 +29,8 @@
 | `outputs/notebooklm/` | NotebookLM 用 Markdown/TXT（日次） |
 | `outputs/full/` | 週次フル版 TXT |
 | `data/history.db` | SQLite の既取得ログ（差分検出の土台） |
-| `admin/server.py` | FastAPI 管理画面（ローカル 3010） |
+| `admin/server.py` | FastAPI 管理画面（ローカル 3010）。Shopify Admin API 操作タブも内蔵 |
+| `core/shopify_admin.py` | Shopify Admin REST クライアント。`.env` の `SHOPIFY_ACCESS_TOKEN` / `SHOPIFY_STORE_DOMAIN` を読む |
 | `scripts/migrate_sqlite_to_supabase.py` | SQLite → Supabase へのマイグレーション |
 | `content/speaker.md` | 講師紹介（由井辰美）の編集ソース。ビルドで `speaker.html` になる |
 | `content/lectures/*.md` | 講習資料の編集ソース。ビルドで `lectures/<slug>.html` になる |
@@ -41,6 +42,12 @@
 - **GitHub Actions `pages.yml`**: `main` への push で `site/build_site.py` を叩いて GitHub Pages に配布
 - **Render (`render.yaml`)**: `main` push で `pip install` → `build_site.py` → `site/dist/` を静的配信
 - **Supabase**: `ai_watch_articles` テーブルに差分保存（`SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` が env にあれば書き込む）
+
+### Render プラン運用（Static Site = keepalive 不要）
+
+このサービスは **Render Static Site** として配信している。Static Site は Web Service と異なり**スリープしないため keepalive は不要**。Free プランのまま帯域・ビルド枚数の制約内で運用可能。
+
+将来 Web Service（FastAPI 管理画面の本番公開など）に切り替える場合は、親 CLAUDE.md「Render プラン運用ルール」に従い Free + keepalive で開始する。
 
 ## コマンド
 
@@ -70,3 +77,22 @@ VSCode で `clients.code-workspace` を開けば「AIハブ起動」タスクで
 GitHub Pages / Render (static) は静的ホスティングなので、公開ナビから `/admin` リンクは外してある。
 ローカルで触るときは `uvicorn admin.server:app --port 3010 --reload` を起動して `http://localhost:3010/admin` にアクセスする。
 運用（記事収集の実行）は基本 GitHub Actions 任せで、管理画面は手元確認用。
+
+### Shopify Admin タブ
+
+`/admin` の「🛒 Shopify」タブで、`.env` に登録した Shopify ストアを直接操作できる。
+
+**前提**: `.env` に以下を設定（`.env.example` 参照）。
+```
+SHOPIFY_ACCESS_TOKEN=shpat_...
+SHOPIFY_STORE_DOMAIN=84c617.myshopify.com
+```
+
+**機能**:
+- 接続確認（ストア名・通貨・プラン表示）
+- 商品一覧（タイトル絞り込み・在庫数つき）
+- 注文一覧（status フィルタ）
+- 顧客検索（メール・名前・電話）
+- 在庫拠点（Location）一覧
+
+**重要**: 本番ストアに直接書き込めるトークンを使うので、`.env` は絶対にコミットしない（`.gitignore` で除外済）。書き込み系（在庫更新等）はAPI実装済だがUI上はまだ読み取りに徹している。書き込み操作を増やす場合は確認モーダルを必ず挟む方針。
