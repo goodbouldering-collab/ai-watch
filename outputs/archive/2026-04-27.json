@@ -18,7 +18,9 @@
         "freshness": 6.0
       },
       "thumbnail": "https://img.youtube.com/vi/MI5OVt_XuGw/hqdefault.jpg",
-      "published": "2026-04-26T16:37:01+00:00"
+      "published": "2026-04-26T16:37:01+00:00",
+      "_is_video": true,
+      "_summary_clean": ""
     },
     {
       "hash": "6ba36cb4ac1879ae",
@@ -37,7 +39,9 @@
         "freshness": 3.0
       },
       "thumbnail": "https://img.youtube.com/vi/Mx3nqdnRKuE/hqdefault.jpg",
-      "published": "2026-04-26T03:00:19+00:00"
+      "published": "2026-04-26T03:00:19+00:00",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "96ecd36a2826da1a",
@@ -56,7 +60,9 @@
         "freshness": 0.0
       },
       "thumbnail": "",
-      "published": "Sun, 26 Apr 2026 16:00:00 GMT"
+      "published": "Sun, 26 Apr 2026 16:00:00 GMT",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "3c39707c7bdccb8b",
@@ -75,7 +81,9 @@
         "freshness": 0.0
       },
       "thumbnail": "https://image.itmedia.co.jp/enterprise/articles/2604/24/cover_news043.jpg",
-      "published": "Mon, 27 Apr 2026 11:20:00 +0900"
+      "published": "Mon, 27 Apr 2026 11:20:00 +0900",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "d3c1b36874d9cb11",
@@ -94,7 +102,9 @@
         "freshness": 0.0
       },
       "thumbnail": "https://image.itmedia.co.jp/mn/articles/2604/27/cover_news010.jpg",
-      "published": "Mon, 27 Apr 2026 08:00:00 +0900"
+      "published": "Mon, 27 Apr 2026 08:00:00 +0900",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "4c630b3697f416ac",
@@ -113,7 +123,9 @@
         "freshness": 0.0
       },
       "thumbnail": "https://image.itmedia.co.jp/business/articles/2604/27/cover_news018.jpg",
-      "published": "Mon, 27 Apr 2026 08:00:00 +0900"
+      "published": "Mon, 27 Apr 2026 08:00:00 +0900",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "9e26a7cb22015a57",
@@ -132,7 +144,9 @@
         "freshness": 0.0
       },
       "thumbnail": "https://image.itmedia.co.jp/business/articles/2604/27/cover_news046.jpg",
-      "published": "Mon, 27 Apr 2026 08:00:00 +0900"
+      "published": "Mon, 27 Apr 2026 08:00:00 +0900",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "6d8eae6a5cdae94d",
@@ -151,7 +165,9 @@
         "freshness": 0.0
       },
       "thumbnail": "https://image.itmedia.co.jp/mn/articles/2604/27/cover_news055.jpg",
-      "published": "Mon, 27 Apr 2026 07:45:00 +0900"
+      "published": "Mon, 27 Apr 2026 07:45:00 +0900",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "d53f4e1142c2fdcb",
@@ -170,7 +186,9 @@
         "freshness": 0.0
       },
       "thumbnail": "https://image.itmedia.co.jp/kn/articles/2604/27/cover_news043.jpg",
-      "published": "Mon, 27 Apr 2026 07:00:00 +0900"
+      "published": "Mon, 27 Apr 2026 07:00:00 +0900",
+      "_is_video": false,
+      "_summary_clean": ""
     },
     {
       "hash": "56a93aa4321557d0",
@@ -189,7 +207,9 @@
         "freshness": 0.0
       },
       "thumbnail": "https://image.itmedia.co.jp/business/articles/2604/27/cover_news048.jpg",
-      "published": "Mon, 27 Apr 2026 07:00:00 +0900"
+      "published": "Mon, 27 Apr 2026 07:00:00 +0900",
+      "_is_video": false,
+      "_summary_clean": ""
     }
   ]
 }
